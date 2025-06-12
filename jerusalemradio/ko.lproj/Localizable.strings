@@ -1,0 +1,162 @@
+/* 
+  Localizable.strings
+  jerusalemradio
+
+  Created by JooYoung Kim on 2018. 11. 17..
+  Copyright © 2018년 JooYoung Kim. All rights reserved.
+*/
+"app_name" = "예루살렘라디오";
+
+"network_error" = "네트워크 연결이 끊어져있습니다.\n네트워크 확인후 다시 시도해주시기 바랍니다.";
+"network_error2" = "통신중 오류가 발생하였습니다.";
+
+"local_kr" = "한국어";
+"local_cn" = "중국어";
+"local_es" = "스페인어";
+"local_pt" = "포르투갈어";
+
+// <!--Common-->
+"common_delete" = "삭제";
+"common_view" = "보기";
+"common_ok" = "확인";
+"common_cancel" = "취소";
+"common_noti" = "알림";
+"common_logout" = "로그아웃";
+
+// <!--Time-->
+"Time_hour" = "%ld시간 전";
+"Time_min" = "%ld분 전";
+"Time_second" = "%ld초 전";
+
+// <!--Player-->
+"Player_finish" = "현재 방송을 하고 있지 않습니다.";
+"Player_title" = "진행 : %@";
+"Player_prev_empty" = "이전곡이 없습니다.";
+"Player_next_empty" = "다음곡이 없습니다.";
+"Player_commnet_null" = "청취소감이 열려있지 않습니다.";
+
+// <!--Main-->
+"Main_again" = "생방송 듣기";
+
+// <!--Menu-->
+"Menu_live" = "Live";
+"Menu_again" = "다시듣기";
+"Menu_pairing" = "편성표";
+"Menu_setting" = "설정";
+
+// <!--Comment-->
+"Comment_title" = "청취 소감";
+"Comment_hint" = "청취 소감을 남겨주세요! (100자 내외)";
+"Comment_empty" = "청취 소감 입력해주세요.";
+"Comment_delete_message" = "청취소감을 삭제하시겠습니까?";
+"Comment_borad_error" = "게시판이 열려 있지 않습니다.";
+
+// <!--Login-->
+"Login_title" = "로그인";
+"Login_id_hint" = "이메일 주소를 입력하세요.";
+"Login_pw_hint" = "비밀번호를 입력하세요.";
+"Login_auto" = "자동 로그인";
+"Login_submit" = "로그인";
+"Login_id" = "아이디 찾기";
+"Login_pw" = "비밀번호 찾기";
+"Login_join" = "회원가입";
+"Login_success" = "로그인을 성공했습니다.";
+"Login_fail" = "로그인에 실패했습니다.";
+
+// <!--Join-->
+"Join_title" = "회원가입";
+"Join_id" = "아이디";
+"Join_id_hint" = "이메일 주소를 입력하세요.";
+"Join_pw01" = "비밀번호";
+"Join_pw02" = "비밀번호 확인";
+"Join_nicname" = "닉네임";
+"Join_nicname_hint" = "닉네임을 입력하세요.";
+"Join_phone" = "휴대폰 번호";
+"Join_phone_hint" = "휴대폰 번호를 입력하세요.";
+"Join_submit" = "회원가입";
+"Join_id_empty" = "이메일 아이디를 입력해주세요.";
+"Join_pw_empty" = "비밀번호를 입력해주세요.";
+"Join_nicname_empty" = "닉네임을 입력해주세요.";
+"Join_phone_empty" = "휴대폰번호를 입력해주세요.";
+"Join_pw_error" = "입력하신 비밀번호가 다릅니다.\n다시 입력해주세요.";
+"Join_success" = "회원가입을 완료했습니다.";
+"Join_fail" = "회원가입에 실패했습니다.";
+
+// <!--FindID-->
+"FindID_title" = "이메일 아이디 찾기";
+"FindID_des01" = "아이디를 잊으셨나요?";
+"FindID_des02" = "닉네임과 전화번호를 입력하세요.\n일치하면 아이디를 알려드리겠습니다.";
+"FindID_nicname_hint" = "닉네임을 입력하세요.";
+"FindID_phone_hint" = "휴대폰 번호를 입력하세요.";
+"FindID_submit" = "이메일 아이디 찾기";
+"FindID_nicname_empty" = "닉네임을 입력해주세요.";
+"FindID_phone_empty" = "휴대폰번호를 입력해주세요.";
+"FindID_message" = "\"%@\"님의 이메일 아이디는\n%@\n입니다.";
+
+// <!--FindPW-->
+"FindPW_title" = "비밀번호 재설정";
+"FindPW_des01" = "비밀번호를 잊으셨나요?";
+"FindPW_des02" = "예루살렘라디오에 가입한 이메일아이디를\n입력하시면 비밀번호 재설정이 가능한\n안내 메일을 보내드리겠습니다.";
+"FindPW_id_hint" = "이메일 주소를 입력하세요.";
+"FindPW_id_empty" = "이메일 아이디를 입력해주세요.";
+"FindPW_submit" = "비밀번호 재설정 메일 보내기";
+"FindPW_success" = "안내 메일을 보냈습니다.";
+
+// <!--Listen-->
+"Listen_title" = "다시듣기";
+"Listen_adapter_host" = "진행 : %@";
+
+// <!--ListenDetail-->
+"ListenDetail_item_contents" = "%@ (진행:%@%@%@)%@";
+"ListenDetail_item_contents1" = "%@패널:%@";
+"ListenDetail_item_contents2" = "주제:%@";
+"ListenDetail_item_contents3" = "%@ (%@)";
+"ListenDetail_item_contents4" = "진행:%@";
+"ListenDetail_item_contents5" = "%@게스트:%@";
+
+// <!--Pairing-->
+"Pairing_title" = "편성표";
+
+// <!--Setting-->
+"setting_title" = "설정";
+"setting_subtitle1" = "로그인 정보";
+"setting_subtitle2" = "설정";
+"setting_subtitle3" = "어플리케이션 정보";
+"setting_login" = "로그인";
+"setting_logout" = "로그아웃";
+"setting_login_id" = "로그인 아이디";
+"setting_auto" = "자동 로그인";
+"setting_push" = "푸시알림";
+"setting_quality" = "음질";
+"setting_quality_high" = "일반 (96kbps)";
+"setting_quality_low" = "저속 (32kbps)";
+"setting_local" = "언어설정";
+"setting_version" = "버전";
+"setting_info" = "개발자 정보";
+"setting_network" = "3G / 4G 인터넷 허용";
+"setting_copyright" = "Copyright";
+"setting_copyright_name" = "Jerusalem Radio";
+"setting_developer_title" = "개발자 정보";
+"setting_developer_message" = "Team GIV\nhttp://volunteers.gnn.or.kr";
+"setting_logout_message" = "로그아웃 하시겠습니까?";
+"setting_live_quality" = "라이브 음질 설정";
+"setting_live_quality_desc" = "원하는 음질을 선택하세요.";
+"setting_lang_setting" = "청취 음성 선택";
+"setting_lang_setting_desc" = "원하시는 언어를 선택하세요.";
+
+// <!--Borad-->
+"Borad_title" = "청취자 게시판";
+
+"close" = "닫기";
+
+"could_not_stream" = "라이브 스트림을 재생할 수 없습니다.";
+
+
+"setting_withdrawal" = "회원 탈퇴";
+"setting_to_withdraw" = "탈퇴하기";
+"setting_withdrawal_desc" = "예루살렘 라디오 탈퇴하시겠습니까?\n탈퇴하시면 모든 회원정보는 삭제됩니다.";
+
+
+
+
+

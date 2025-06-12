@@ -1,0 +1,157 @@
+/*
+ Localizable.strings
+ jerusalemradio
+ 
+ Created by JooYoung Kim on 2018. 11. 17..
+ Copyright © 2018년 JooYoung Kim. All rights reserved.
+ */
+"app_name" = "Jerusalem Radio FM";
+
+"network_error" = "Se corto la conexión a internet, \n  Intentar Nuevamente";
+"network_error2" = "Error de Transmisión";
+
+"local_kr" = "Coreano";
+"local_cn" = "Chino";
+"local_es" = "Español";
+"local_pt" = "Portugués";
+
+// <!--Common-->
+"common_delete" = "Borrar";
+"common_view" = "Ver";
+"common_ok" = "OK";
+"common_cancel" = "Cancelar";
+"common_noti" = "Notificación";
+"common_logout" = "Logout";
+
+// <!--Time-->
+"Time_hour" = "En %ld Hr.";
+"Time_min" = "En %ld Min.";
+"Time_second" = "En %ld Seg. ";
+
+// <!--Player-->
+"Player_finish" = "No estamos transmitiendo en Vivo";
+"Player_title" = "Progreso : %@";
+"Player_prev_empty" = "No hay canción anterior";
+"Player_next_empty" = "No hay canción posterior";
+"Player_commnet_null" = "No se puede dejar mensaje";
+
+// <!--Main-->
+"Main_again" = "En Vivo";
+
+// <!--Menu-->
+"Menu_live" = "Al aire";
+"Menu_again" = "Ver de nuevo";
+"Menu_pairing" = "Programación";
+"Menu_setting" = "Opciones";
+
+// <!--Comment-->
+"Comment_title" = "Comentarios";
+"Comment_hint" = "Dejé sus comentarios (100 Caracteres Max.)";
+"Comment_empty" = "Ingresar Comentario";
+"Comment_delete_message" = "¿Eliminar comentario?";
+"Comment_borad_error" = "Tablero Cerrado";
+
+// <!--Login-->
+"Login_title" = "Login";
+"Login_id_hint" = "Email";
+"Login_pw_hint" = "Contraseña";
+"Login_auto" = "Conectar Automaticamente";
+"Login_submit" = "Login";
+"Login_id" = "Recuperar ID";
+"Login_pw" = "Recuperar Contraseña";
+"Login_join" = "Registrarse";
+"Login_success" = "Login Satisfactorio";
+"Login_fail" = "Falló el inicio de sesión.";
+
+// <!--Join-->
+"Join_title" = "Registrarse";
+"Join_id" = "ID";
+"Join_id_hint" = "Ingrese Email";
+"Join_pw01" = "Contraseña";
+"Join_pw02" = "Confirmar Contraseña";
+"Join_nicname" = "Alias";
+"Join_nicname_hint" = "Ingresar Alias";
+"Join_phone" = "No. de Celular";
+"Join_phone_hint" = "Ingresar Número de Celular";
+"Join_submit" = "Resgistrarse";
+"Join_id_empty" = "Ingrese su Email";
+"Join_pw_empty" = "Contraseña";
+"Join_nicname_empty" = "Ingresar Alias";
+"Join_phone_empty" = "Ingresar No. Celular";
+"Join_pw_error" = "Contraseña Incorrecta \n Ingrese Nuevamente";
+"Join_success" = "Registro Completado";
+"Join_fail" = "La membresía falló";
+
+// <!--FindID-->
+"FindID_title" = "Buscar ID";
+"FindID_des01" = "¿Olvidó su ID?";
+"FindID_des02" = "Ingresar Alias y Numero de Celular\nSi es correcto sus datos, le mostraremos su ID";
+"FindID_nicname_hint" = "Ingresar su Alias";
+"FindID_phone_hint" = "No. de Celular";
+"FindID_submit" = "Buscar ID";
+"FindID_nicname_empty" = "Ingresar Alias";
+"FindID_phone_empty" = "Ingresar No. Celular";
+"FindID_message" = "ID de \"%@\" es \n%@";
+
+// <!--FindPW-->
+"FindPW_title" = "Restablecer Contraseña";
+"FindPW_des01" = "¿Olvido la Contraseña?";
+"FindPW_des02" = "¿Olvido la Contraseña?Ingresar el Email con el que esta registrado en Jerusalem Radio, le enviaremos las instrucciones de como restablecer su contraseña.";
+"FindPW_id_hint" = "Ingresar Email";
+"FindPW_id_empty" = "Ingresar ID (Email)";
+"FindPW_submit" = "Restablecer Contraseña";
+"FindPW_success" = "Información Enviada";
+
+// <!--Listen-->
+"Listen_title" = "Escuchar Nuevamente";
+"Listen_adapter_host" = "Progreso : %@";
+
+// <!--ListenDetail-->
+"ListenDetail_item_contents" = "%@ (Progreso:%@%@%@)%@";
+"ListenDetail_item_contents1" = "%@Panel:%@";
+"ListenDetail_item_contents2" = "Tema:%@";
+"ListenDetail_item_contents3" = "%@ (%@)";
+"ListenDetail_item_contents4" = "Progreso:%@";
+"ListenDetail_item_contents5" = "%@Invitado:%@";
+
+// <!--Pairing-->
+"Pairing_title" = "Programa";
+
+// <!--Setting-->
+"setting_title" = "Configuración";
+"setting_subtitle1" = "Información de Login";
+"setting_subtitle2" = "Configurar";
+"setting_subtitle3" = "Información General";
+"setting_login" = "Login";
+"setting_logout" = "Logout";
+"setting_login_id" = "ID";
+"setting_auto" = "Conectar Automáticamente";
+"setting_push" = "Avisos";
+"setting_quality" = "Calidad de Transmisión";
+"setting_quality_high" = "Normal (96 Kbps)";
+"setting_quality_low" = "Baja (32 Kbps)";
+"setting_local" = "Idioma";
+"setting_version" = "Versión";
+"setting_info" = "Información de la Versión";
+"setting_network" = "Activar 3G / 4G";
+"setting_copyright" = "Copyright";
+"setting_copyright_name" = "Jerusalem Radio";
+"setting_developer_title" = "Información del Desarrollador";
+"setting_developer_message" = "Equipo GIV\nhttp://volunteers.gnn.or.kr";
+"setting_logout_message" = "¿Quiere Salir?";
+"setting_live_quality" = "Establecer calidad de sonido en vivo";
+"setting_live_quality_desc" = "Por favor, seleccione la calidad de sonido deseada.";
+"setting_lang_setting" = "Seleccione escuchar la voz";
+"setting_lang_setting_desc" = "Por favor, elija su idioma preferido.";
+
+// <!--Borad-->
+"Borad_title" = "Tablero de Oyentes";
+
+"close" = "Cerrar";
+
+"could_not_stream" = "No se pudo encontrar la secuencia que solicitó.";
+
+
+"setting_withdrawal" = "retiro de la membresía";
+"setting_to_withdraw" = "secesión";
+"setting_withdrawal_desc" = "¿Se va de Radio Jerusalén?\nSi secesión, se eliminará toda la información del miembro.";

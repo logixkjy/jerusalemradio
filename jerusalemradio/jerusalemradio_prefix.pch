@@ -1,0 +1,35 @@
+//
+//  jerusalemradio_prefix.pch
+//  jerusalemradio
+//
+//  Created by JooYoung Kim on 2017. 5. 3..
+//  Copyright © 2017년 JooYoung Kim. All rights reserved.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_5_0
+#warning "This project uses features only available in iOS SDK 5.0 and later."
+#endif
+
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import "CommonDefine.h"
+#import "CommonUtil.h"
+#import "CommonData.h"
+#import "AppDelegate.h"
+#import "UIPopupView.h"
+#import "UIView+Toast.h"
+#import <AFNetworking/AFNetworking.h>
+#import <AFNetworking/UIImageView+AFNetworking.h>
+#import "URLAddressManager.h"
+#import "MNMToast.h"
+#endif
+
+#define NSLog( xx, ... ) NSLog(@"%s(l:%d): " xx, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+
+#define RESIZE(a) [CommonUtil resizeFor720:a]
+#define isiPhoneXScreen() [CommonUtil isiPhoneXScreen]
+
+#define CMD_PUSH_MOVE_LINK @"cmd_push_move_link"

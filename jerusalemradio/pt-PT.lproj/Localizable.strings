@@ -1,0 +1,156 @@
+/*
+ Localizable.strings
+ jerusalemradio
+ 
+ Created by JooYoung Kim on 2018. 11. 17..
+ Copyright © 2018년 JooYoung Kim. All rights reserved.
+ */
+"app_name" = "Jerusalem Rádio BR";
+
+"network_error" = "Sem conexão a internet. verifique a sua conexão";
+"network_error2" = "Erro de trasmissão";
+
+"local_kr" = "Coreano";
+"local_cn" = "Chinês";
+"local_es" = "Espanhol";
+"local_pt" = "Português";
+
+// <!--Common-->
+"common_delete" = "Excluir";
+"common_view" = "Ver";
+"common_ok" = "OK";
+"common_cancel" = "cancelar";
+"common_noti" = "Notificação";
+"common_logout" = "Sair";
+
+// <!--Time-->
+"Time_hour" = "Em %ld hr";
+"Time_min" = "Em %ld min";
+"Time_second" = "Em %ld seg";
+
+// <!--Player-->
+"Player_finish" = "Não estamos transmitindo no momento";
+"Player_title" = "Progresso : %@";
+"Player_prev_empty" = "Não há programas anteriores";
+"Player_next_empty" = "Não há programas posteriores";
+"Player_commnet_null" = "Não é possível deixar seu comentário";
+
+// <!--Main-->
+"Main_again" = "Ao vivo";
+
+// <!--Menu-->
+"Menu_live" = "Live";
+"Menu_again" = "De Novo!";
+"Menu_pairing" = "Programação";
+"Menu_setting" = "Configurações";
+
+// <!--Comment-->
+"Comment_title" = "comentário";
+"Comment_hint" = "Deixe seu comentário (até 100 caractéres)";
+"Comment_empty" = "Digite seu comentário";
+"Comment_delete_message" = "Deseja excluir o comenário ?";
+"Comment_borad_error" = "Mural fechado";
+
+// <!--Login-->
+"Login_title" = "Login";
+"Login_id_hint" = "Email";
+"Login_pw_hint" = "senha";
+"Login_auto" = "Conectar automaticamente";
+"Login_submit" = "Login";
+"Login_id" = "Recuperar ID";
+"Login_pw" = "Recuperar senha";
+"Login_join" = "registrar";
+"Login_success" = "Login feito";
+"Login_fail" = "Login falhou.";
+
+// <!--Join-->
+"Join_title" = "Registrar";
+"Join_id" = "ID";
+"Join_id_hint" = "Digite o seu email";
+"Join_pw01" = "Senha";
+"Join_pw02" = "Verificar senha";
+"Join_nicname" = "Usuário";
+"Join_nicname_hint" = "Digite o usuário";
+"Join_phone" = "número do celular";
+"Join_phone_hint" = "Digite o número do celular";
+"Join_submit" = "Cadastre-se";
+"Join_id_empty" = "Digite o seu email";
+"Join_pw_empty" = "digite a sua senha";
+"Join_nicname_empty" = "Digite o seu usuário";
+"Join_phone_empty" = "Digite o número do celular";
+"Join_pw_error" = "A senha está errada \n tente novamente";
+"Join_success" = "O seu cadastro foi concluido";
+"Join_fail" = "Associação falhou.";
+
+// <!--FindID-->
+"FindID_title" = "Pesquisar ID";
+"FindID_des01" = "Não lembra da sua senha ?";
+"FindID_des02" = "Coloque o seu nome de usuário e o número do celular, se correto mostraremos o seu ID";
+"FindID_nicname_hint" = "Digite o seu usuário";
+"FindID_phone_hint" = "Digite o número do celular";
+"FindID_submit" = "Pesquisar ID";
+"FindID_nicname_empty" = "Digite o seu usuário";
+"FindID_phone_empty" = "Digite o número do celular";
+"FindID_message" = "O ID do \"%@\" è %@";
+
+// <!--FindPW-->
+"FindPW_title" = "Recuperar senha";
+"FindPW_des01" = "Não lembra da sua senha ?";
+"FindPW_des02" = "Digite o email cadastrado para que possamos enviar as instruções de recuperação de senha";
+"FindPW_id_hint" = "Digite o seu email";
+"FindPW_id_empty" = "Digite o seu ID (Email)";
+"FindPW_submit" = "Recuperar senha";
+"FindPW_success" = "O email foi enviado";
+
+// <!--Listen-->
+"Listen_title" = "Escutar novamente";
+"Listen_adapter_host" = "Coordenador : %@";
+
+// <!--ListenDetail-->
+"ListenDetail_item_contents" = "%@ (Coordenador:%@%@%@)%@";
+"ListenDetail_item_contents1" = "%@Painel:%@";
+"ListenDetail_item_contents2" = "Tema:%@";
+"ListenDetail_item_contents3" = "%@(%@)";
+"ListenDetail_item_contents4" = "Coordenador:%@";
+"ListenDetail_item_contents5" = "%@Convidado:%@";
+
+// <!--Pairing-->
+"Pairing_title" = "Horários";
+
+// <!--Setting-->
+"setting_title" = "Configurações";
+"setting_subtitle1" = "Informação de Login";
+"setting_subtitle2" = "Configurar";
+"setting_subtitle3" = "Sobre o Aplicativo";
+"setting_login" = "Login";
+"setting_logout" = "Logout";
+"setting_login_id" = "ID";
+"setting_auto" = "Conectar automaticamente";
+"setting_push" = "Avisos";
+"setting_quality" = "Qualidade de trasmissão";
+"setting_quality_high" = "Normal (96kbps)";
+"setting_quality_low" = "Baixa (32kbps)";
+"setting_local" = "Idiomas";
+"setting_version" = "Versão";
+"setting_info" = "Sobre a versão";
+"setting_network" = "Permitir uso de dados (3G / 4G)";
+"setting_copyright" = "Copyright";
+"setting_copyright_name" = "Jerusalem Radio";
+"setting_developer_title" = "Sobre o Desenvolvedor";
+"setting_developer_message" = "Team GIV\nhttp://volunteers.gnn.or.kr";
+"setting_logout_message" = "Deseja sair ?";
+"setting_live_quality" = "Definir a qualidade de som ao vivo";
+"setting_live_quality_desc" = "Por favor, selecione a qualidade de som desejada.";
+"setting_lang_setting" = "Selecione a voz de escuta";
+"setting_lang_setting_desc" = "Por favor, escolha o seu idioma preferido.";
+
+// <!--Borad-->
+"Borad_title" = "Mural do ouvinte";
+
+"close" = "Fechar";
+
+"could_not_stream" = "Não foi possível encontrar o fluxo que você solicitou.";
+
+"setting_withdrawal" = "membro secessão";
+"setting_to_withdraw" = "secessão";
+"setting_withdrawal_desc" = "Você gostaria de sair da Rádio Jerusalém?\nSe você cancelar, todas as informações do membro serão excluídas.";
