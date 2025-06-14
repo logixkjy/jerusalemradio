@@ -25,6 +25,7 @@
 + (NSString*)jsonStringFromDictionary:(NSDictionary*)data;
 + (NSString*)getChangeDateFormat:(NSString *)pDate tdateFormat:(NSString*)format changeDateFormat:(NSString*)cFormat;
 + (NSString*)getPassedTime:(NSString*)time;
++ (NSDate*)getChangeStringToDate:(NSString*)time;
 
 + (void) writeIntToDefault:(int) nValue KEY:(NSString *)strKey;
 + (int) readIntFromDefault:(NSString *)strKey;

@@ -41,6 +41,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:a]
 #define MOVE_KEY @"pagemove://"
 #define SAFARI_OPEN @"safariopen://"
 
+#define LIVE_CLOSE_DATE @"2025-06-30 23:59:59"
+
 enum NETWORK_STATUS {
     NETWORK_NONE = 0,
     NETWORK_WIFI = 2,

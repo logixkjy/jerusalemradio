@@ -102,7 +102,12 @@
                     if ([GetCommonData.liveType isEqualToString:@"track"]) {
                         if (![GetCommonData.metadata[@"track_title"] isKindOfClass:[NSNull class]] &&
                             [GetCommonData.metadata[@"track_title"] length] > 0) {
-                            [weakSelf play];
+                            NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
+                            if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && closeDate.timeIntervalSince1970 < NSDate.now.timeIntervalSince1970) {
+                                // Do Nothing...
+                            } else {
+                                [weakSelf play];
+                            }
                         }
                     } else if ([GetCommonData.liveType isEqualToString:@"livestream"]) {
                         if (![GetCommonData.showsCurrent[@"name"] isKindOfClass:[NSNull class]] &&
@@ -191,24 +196,30 @@
     [self.menuView addSubview:img_line];
     
     maxY = CGRectGetMaxY(self.img_logo.frame);
-    self.btn_live.frame = CGRectMake(0, maxY, RESIZE(332), RESIZE(160));
-    [self.btn_live setImage:[UIImage imageNamed:@"menu_icon_mic01"] forState:UIControlStateNormal];
-    [self.btn_live setTitle:NSLocalizedString(@"Menu_live", @"Live") forState:UIControlStateNormal];
-    [self.btn_live setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
-    [self.btn_live.titleLabel setFont:[UIFont boldSystemFontOfSize720:28]];
-    [self.btn_live setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
-    [self.btn_live setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
-    [self.btn_live setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
-    img_line = [[UIImageView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.btn_live.frame) - RESIZE(2), RESIZE(332), RESIZE(2))];
-    img_line.backgroundColor = UIColorFromRGB(0x888888);
-    [self.menuView addSubview:img_line];
+    NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
+    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && closeDate.timeIntervalSince1970 < NSDate.now.timeIntervalSince1970) {
+        self.btn_live.hidden = YES;
+    } else {
+        self.btn_live.frame = CGRectMake(0, maxY, RESIZE(332), RESIZE(160));
+        [self.btn_live setImage:[UIImage imageNamed:@"menu_icon_mic01"] forState:UIControlStateNormal];
+        [self.btn_live setTitle:NSLocalizedString(@"Menu_live", @"Live") forState:UIControlStateNormal];
+        [self.btn_live setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
+        [self.btn_live.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
+        [self.btn_live setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
+        [self.btn_live setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
+        [self.btn_live setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
+        img_line = [[UIImageView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.btn_live.frame) - RESIZE(2), RESIZE(332), RESIZE(2))];
+        img_line.backgroundColor = UIColorFromRGB(0x888888);
+        [self.menuView addSubview:img_line];
+        
+        maxY = CGRectGetMaxY(self.btn_live.frame);
+    }
     
-    maxY = CGRectGetMaxY(self.btn_live.frame);
     self.btn_aod.frame = CGRectMake(0, maxY, RESIZE(332), RESIZE(160));
     [self.btn_aod setImage:[UIImage imageNamed:@"menu_icon_headphones01"] forState:UIControlStateNormal];
     [self.btn_aod setTitle:NSLocalizedString(@"Menu_again", @"다시 듣기") forState:UIControlStateNormal];
     [self.btn_aod setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
-    [self.btn_aod.titleLabel setFont:[UIFont boldSystemFontOfSize720:28]];
+    [self.btn_aod.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
     [self.btn_aod setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
     [self.btn_aod setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
     [self.btn_aod setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
@@ -221,7 +232,7 @@
     [self.btn_schedule setImage:[UIImage imageNamed:@"menu_icon_schedule01"] forState:UIControlStateNormal];
     [self.btn_schedule setTitle:NSLocalizedString(@"Menu_pairing", @"편성표") forState:UIControlStateNormal];
     [self.btn_schedule setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
-    [self.btn_schedule.titleLabel setFont:[UIFont boldSystemFontOfSize720:28]];
+    [self.btn_schedule.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
     [self.btn_schedule setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
     [self.btn_schedule setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
     [self.btn_schedule setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
@@ -239,7 +250,7 @@
         [self.btn_notice setImage:[UIImage imageNamed:@"menu_icon_notice01"] forState:UIControlStateNormal];
         [self.btn_notice setTitle:@"공지사항" forState:UIControlStateNormal];
         [self.btn_notice setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
-        [self.btn_notice.titleLabel setFont:[UIFont boldSystemFontOfSize720:28]];
+        [self.btn_notice.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
         [self.btn_notice setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
         [self.btn_notice setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
         [self.btn_notice setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
@@ -253,7 +264,7 @@
     [self.btn_setting setImage:[UIImage imageNamed:@"menu_icon_setting01"] forState:UIControlStateNormal];
     [self.btn_setting setTitle:NSLocalizedString(@"Menu_setting", @"설정") forState:UIControlStateNormal];
     [self.btn_setting setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
-    [self.btn_setting.titleLabel setFont:[UIFont boldSystemFontOfSize720:28]];
+    [self.btn_setting.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
     [self.btn_setting setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
     [self.btn_setting setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
     [self.btn_setting setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
@@ -1061,6 +1072,12 @@
 
 - (IBAction)playOnAir
 {
+    NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
+    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && closeDate.timeIntervalSince1970 < NSDate.now.timeIntervalSince1970) {
+//        GetCommonData.audio_mode = @"AOD";
+        [self onMoveAOD];
+        return;
+    }
     [self.mainDelegate startAnimatedLodingView];
     if ([GetCommonData.audio_mode isEqualToString:@"LIVE"]) {
         [self.mainDelegate stopAnimatedLodingView];

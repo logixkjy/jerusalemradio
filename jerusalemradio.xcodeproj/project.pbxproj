@@ -91,6 +91,8 @@
 		7C81C8171EBBE466005FD066 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C81C8161EBBE466005FD066 /* AVFoundation.framework */; };
 		7C81C8191EBBE46D005FD066 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C81C8181EBBE46D005FD066 /* AudioToolbox.framework */; };
 		7C81C81B1EBBE479005FD066 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C81C81A1EBBE479005FD066 /* MediaPlayer.framework */; };
+		7C88709C2DFD69D3003333E1 /* icon_mic_aod.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C88709A2DFD69D3003333E1 /* icon_mic_aod.png */; };
+		7C88709D2DFD69D3003333E1 /* icon_mic_aod@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C88709B2DFD69D3003333E1 /* icon_mic_aod@2x.png */; };
 		7CAD87C8219FA806004FF634 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7CAD87CA219FA806004FF634 /* Localizable.strings */; };
 		7CAD87D3219FA896004FF634 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7CAD87D5219FA896004FF634 /* InfoPlist.strings */; };
 		7CAD87DA219FAB9E004FF634 /* icon_board@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7CAD87DC219FAB9E004FF634 /* icon_board@2x.png */; };
@@ -277,6 +279,8 @@
 		7C81C8161EBBE466005FD066 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		7C81C8181EBBE46D005FD066 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		7C81C81A1EBBE479005FD066 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		7C88709A2DFD69D3003333E1 /* icon_mic_aod.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_mic_aod.png; sourceTree = "<group>"; };
+		7C88709B2DFD69D3003333E1 /* icon_mic_aod@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_mic_aod@2x.png"; sourceTree = "<group>"; };
 		7CAD87C9219FA806004FF634 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7CAD87CB219FA809004FF634 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		7CAD87CC219FA80B004FF634 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -643,6 +647,8 @@
 				7C81C7841EB95C8B005FD066 /* icon_id@2x.png */,
 				7C81C7851EB95C8B005FD066 /* icon_menu.png */,
 				7C81C7861EB95C8B005FD066 /* icon_menu@2x.png */,
+				7C88709A2DFD69D3003333E1 /* icon_mic_aod.png */,
+				7C88709B2DFD69D3003333E1 /* icon_mic_aod@2x.png */,
 				7C5078F9296EE4E100C369D9 /* icon_mic_onair.png */,
 				7C507901296EE54500C369D9 /* icon_mic_onair@2x.png */,
 				7C81C7891EB95C8B005FD066 /* icon_more.png */,
@@ -794,6 +800,8 @@
 				7C81C7E21EB95C8B005FD066 /* ON-AIR@2x.png in Resources */,
 				7CC072F52624929100003FB4 /* menu_icon_headphones01@2x.png in Resources */,
 				7C81C7B41EB95C8B005FD066 /* icon_arrow.png in Resources */,
+				7C88709C2DFD69D3003333E1 /* icon_mic_aod.png in Resources */,
+				7C88709D2DFD69D3003333E1 /* icon_mic_aod@2x.png in Resources */,
 				7CAD87FA21A0574B004FF634 /* menu_icon_headphones.png in Resources */,
 				C614192F1EE06152006FBBD8 /* bar_btn_close_press.png in Resources */,
 				C63FA3AA1EE4287D00B594F8 /* icon-72.png in Resources */,
@@ -1315,13 +1323,13 @@
 				CODE_SIGN_ENTITLEMENTS = jerusalemradio/jerusalemradio.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = E9X7ZUYDPK;
 				GCC_PREFIX_HEADER = jerusalemradio/jerusalemradio_prefix.pch;
 				INFOPLIST_FILE = jerusalemradio/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.goodnews.jerusalemradio2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1338,13 +1346,13 @@
 				CODE_SIGN_ENTITLEMENTS = jerusalemradio/jerusalemradio.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = E9X7ZUYDPK;
 				GCC_PREFIX_HEADER = jerusalemradio/jerusalemradio_prefix.pch;
 				INFOPLIST_FILE = jerusalemradio/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.goodnews.jerusalemradio2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

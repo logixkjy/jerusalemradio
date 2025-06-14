@@ -15,6 +15,8 @@
 
 @property (nonatomic) IBOutlet UIView *onAirView;
 
+@property (nonatomic) IBOutlet UIImageView *onAirImage;
+
 @end
 
 @implementation ViewController
@@ -28,17 +30,26 @@
                                     uid:[CommonUtil readObjectFromDefault:@"USER_ID"]
                                     upw:[CommonUtil readObjectFromDefault:@"USER_PW"]
                       CompletionHandler:^(NSDictionary *data, NSError *error) {
-                          if ([data[@"status"] intValue] == 200) {
-                              GetCommonData.isLogin = YES;
-                              GetCommonData.MB_ID = data[@"data"][@"MB_ID"];
-                              GetCommonData.MB_NAME = data[@"data"][@"MB_NAME"];
-                              GetCommonData.MB_TOKEN = data[@"data"][@"MB_TOKEN"];
-                              GetCommonData.MB_TYPE = data[@"data"][@"MB_TYPE"];
-                              [self checkSchemes];
-                          }
-                      }];
+            if ([data[@"status"] intValue] == 200) {
+                GetCommonData.isLogin = YES;
+                GetCommonData.MB_ID = data[@"data"][@"MB_ID"];
+                GetCommonData.MB_NAME = data[@"data"][@"MB_NAME"];
+                GetCommonData.MB_TOKEN = data[@"data"][@"MB_TOKEN"];
+                GetCommonData.MB_TYPE = data[@"data"][@"MB_TYPE"];
+                [self checkSchemes];
+            }
+        }];
     } else {
         [self checkSchemes];
+    }
+    
+    NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
+    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && closeDate.timeIntervalSince1970 < NSDate.now.timeIntervalSince1970) {
+        self.onAirImage.image = [UIImage imageNamed:@"icon_mic_aod"];
+    }
+    
+    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && ![CommonUtil readBoolFromDefault:@"IS_SHOW_LIVE_CLOSE_POPUP"]) {
+        [self showNoticeLiveClose];
     }
 }
 
@@ -78,7 +89,7 @@
     
     self.bottomView.frame = CGRectMake(0, MAIN_SIZE().height - RESIZE(194) - (isiPhoneXScreen() ? 34 : 0), MAIN_SIZE().width, RESIZE(194) + (isiPhoneXScreen() ? 34 : 0));
     self.vi_progress.frame = CGRectMake(0, 0, MAIN_SIZE().width, RESIZE(40));
-//    self.sl_progress.frame = CGRectMake(-3, 0, MAIN_SIZE().width+6, RESIZE(20));
+    //    self.sl_progress.frame = CGRectMake(-3, 0, MAIN_SIZE().width+6, RESIZE(20));
     self.lbl_playback_time.frame = CGRectMake(RESIZE(13), 0, RESIZE(300), RESIZE(40));
     self.lbl_playback_time.textColor = UIColor.blackColor;
     self.lbl_playback_time.font = [UIFont systemFontOfSize720:20];
@@ -134,7 +145,7 @@
             
             ((CommentsCell*)cell).lbl_notice_name.attributedText = attributedString;
             ((CommentsCell*)cell).lbl_notice_name.frame = CGRectMake(RESIZE(33), RESIZE(23), CGRectGetWidth(self.commentsView.frame) - RESIZE(66), RESIZE(38));
-    
+            
             ((CommentsCell*)cell).lbl_notice_desc.text = self.commentsList[indexPath.row][@"PR_CO_CONTENT"];
             ((CommentsCell*)cell).lbl_notice_desc.font = [UIFont systemFontOfSize720:28];
             
@@ -169,7 +180,7 @@
                 ((CommentsCell*)cell).btn_delete.hidden = YES;
             }
         } @catch (NSException *exception) {
-           
+            
         }
         
     }
@@ -216,4 +227,31 @@
     }
 }
 
+
+- (void)showNoticeLiveClose {
+    UIAlertController *alert = [UIAlertController
+                                alertControllerWithTitle:@"공지합니다."
+                                message:@"예루살렘라디오 라이브방송은 2025년 6월까지만 서비스되며\n7월부터는 다시듣기 서비스만 이용하실 수 있습니다."
+                                preferredStyle:UIAlertControllerStyleAlert];
+    
+//    UIAlertAction *noMoreAction = [UIAlertAction actionWithTitle:@"다시 보지 않기"
+//                                                       style:UIAlertActionStyleDestructive
+//                                                     handler:^(UIAlertAction * _Nonnull action) {
+//        [CommonUtil writeBoolToDefault:YES KEY:@"IS_SHOW_LIVE_CLOSE_POPUP"];
+//                                                     }];
+//    
+//    [alert addAction:noMoreAction];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"확인"
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction * _Nonnull action) {
+        [CommonUtil writeBoolToDefault:YES KEY:@"IS_SHOW_LIVE_CLOSE_POPUP"];
+                                                     }];
+
+    
+    [alert addAction:okAction];
+    
+    // 반드시 UIViewController에서 presentViewController: 해야 합니다
+    [self presentViewController:alert animated:YES completion:nil];
+}
 @end

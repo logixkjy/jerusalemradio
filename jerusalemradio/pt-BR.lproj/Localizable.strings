@@ -155,3 +155,5 @@
 "setting_withdrawal" = "membro secessão";
 "setting_to_withdraw" = "secessão";
 "setting_withdrawal_desc" = "Você gostaria de sair da Rádio Jerusalém?\nSe você cancelar, todas as informações do membro serão excluídas.";
+
+"notice_live_close" = "Aviso:\nA transmissão ao vivo da Rádio Jerusalém estará disponível apenas até junho de 2025 e, a partir de julho,\nsomente o serviço de replay estará disponível.";

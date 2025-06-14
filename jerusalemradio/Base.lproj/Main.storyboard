@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="v2r-A8-VhM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="v2r-A8-VhM">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -472,6 +472,7 @@
                         <outlet property="menuView" destination="WwS-p5-Uio" id="3QS-wJ-XzZ"/>
                         <outlet property="noticeTitleView" destination="ejY-qP-bSP" id="3VP-pu-3k9"/>
                         <outlet property="noticeView" destination="LdC-8a-bA0" id="0ri-Lg-teO"/>
+                        <outlet property="onAirImage" destination="BiS-99-aeR" id="qfg-zg-p2O"/>
                         <outlet property="onAirView" destination="Dlv-Fg-Vrf" id="01V-XQ-hml"/>
                         <outlet property="tv_comments" destination="Xb5-re-dmk" id="1S3-5X-7VU"/>
                         <outlet property="vi_progress" destination="Zt7-wi-97e" id="3kN-hL-c1p"/>

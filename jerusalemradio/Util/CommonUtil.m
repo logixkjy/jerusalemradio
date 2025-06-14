@@ -218,6 +218,16 @@
     return [dateFormat stringFromDate:date];
 }
 
++ (NSDate*)getChangeStringToDate:(NSString*)time
+{
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"Asia/Seoul"];
+    [dateFormat setTimeZone:timeZone];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+
+    return [dateFormat dateFromString:time];
+}
+
 #pragma mark -------------------------------------------------------------------
 #pragma mark < NSUserDefaults Methods >
 
