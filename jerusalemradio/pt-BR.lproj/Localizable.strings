@@ -152,8 +152,9 @@
 "could_not_stream" = "Não foi possível encontrar o fluxo que você solicitou.";
 
 
-"setting_withdrawal" = "membro secessão";
-"setting_to_withdraw" = "secessão";
-"setting_withdrawal_desc" = "Você gostaria de sair da Rádio Jerusalém?\nSe você cancelar, todas as informações do membro serão excluídas.";
+"setting_withdrawal" = "Excluir conta";
+"setting_to_withdraw" = "Excluir";
+"setting_withdrawal_desc" = "Deseja excluir sua conta da Rádio Jerusalém?\nAo sair, todos os seus dados de membro serão removidos.";
 
 "notice_live_close" = "Aviso:\nA transmissão ao vivo da Rádio Jerusalém estará disponível apenas até junho de 2025 e, a partir de julho,\nsomente o serviço de replay estará disponível.";
+

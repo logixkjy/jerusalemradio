@@ -152,8 +152,8 @@
 "could_not_stream" = "No se pudo encontrar la secuencia que solicitó.";
 
 
-"setting_withdrawal" = "retiro de la membresía";
-"setting_to_withdraw" = "secesión";
-"setting_withdrawal_desc" = "¿Se va de Radio Jerusalén?\nSi secesión, se eliminará toda la información del miembro.";
+"setting_withdrawal" = "Eliminar cuenta";
+"setting_to_withdraw" = "Eliminar";
+"setting_withdrawal_desc" = "¿Deseas eliminar tu cuenta de Radio Jerusalén?\nAl hacerlo, se borrará toda tu información de usuario.";
 
 "notice_live_close" = "Aviso:\nLa transmisión en vivo de Radio Jerusalén estará disponible solo hasta junio de 2025, y a partir de julio,\nsolo estará disponible el servicio de repetición.";

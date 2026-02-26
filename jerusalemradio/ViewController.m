@@ -43,14 +43,14 @@
         [self checkSchemes];
     }
     
-    NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
-    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && closeDate.timeIntervalSince1970 < NSDate.now.timeIntervalSince1970) {
+//    NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
+    if (![[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"ES"]) {
         self.onAirImage.image = [UIImage imageNamed:@"icon_mic_aod"];
     }
     
-    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && ![CommonUtil readBoolFromDefault:@"IS_SHOW_LIVE_CLOSE_POPUP"]) {
-        [self showNoticeLiveClose];
-    }
+//    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && ![CommonUtil readBoolFromDefault:@"IS_SHOW_LIVE_CLOSE_POPUP"]) {
+//        [self showNoticeLiveClose];
+//    }
 }
 
 - (void)checkSchemes

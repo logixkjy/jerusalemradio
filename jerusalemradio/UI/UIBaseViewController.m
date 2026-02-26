@@ -102,11 +102,11 @@
                     if ([GetCommonData.liveType isEqualToString:@"track"]) {
                         if (![GetCommonData.metadata[@"track_title"] isKindOfClass:[NSNull class]] &&
                             [GetCommonData.metadata[@"track_title"] length] > 0) {
-                            NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
-                            if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && closeDate.timeIntervalSince1970 < NSDate.now.timeIntervalSince1970) {
-                                // Do Nothing...
-                            } else {
+//                            NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
+                            if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"ES"]) {
                                 [weakSelf play];
+                            } else {
+                                // Do Nothing...
                             }
                         }
                     } else if ([GetCommonData.liveType isEqualToString:@"livestream"]) {
@@ -196,10 +196,8 @@
     [self.menuView addSubview:img_line];
     
     maxY = CGRectGetMaxY(self.img_logo.frame);
-    NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
-    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && closeDate.timeIntervalSince1970 < NSDate.now.timeIntervalSince1970) {
-        self.btn_live.hidden = YES;
-    } else {
+//    NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
+    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"ES"]) {
         self.btn_live.frame = CGRectMake(0, maxY, RESIZE(332), RESIZE(160));
         [self.btn_live setImage:[UIImage imageNamed:@"menu_icon_mic01"] forState:UIControlStateNormal];
         [self.btn_live setTitle:NSLocalizedString(@"Menu_live", @"Live") forState:UIControlStateNormal];
@@ -213,6 +211,8 @@
         [self.menuView addSubview:img_line];
         
         maxY = CGRectGetMaxY(self.btn_live.frame);
+    } else{
+        self.btn_live.hidden = YES;
     }
     
     self.btn_aod.frame = CGRectMake(0, maxY, RESIZE(332), RESIZE(160));
@@ -1072,8 +1072,8 @@
 
 - (IBAction)playOnAir
 {
-    NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
-    if ([[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"KR"] && closeDate.timeIntervalSince1970 < NSDate.now.timeIntervalSince1970) {
+//    NSDate *closeDate = [CommonUtil getChangeStringToDate:LIVE_CLOSE_DATE];
+    if (![[CommonUtil readObjectFromDefault:@"LANG_CODE"] isEqualToString:@"ES"]) {
 //        GetCommonData.audio_mode = @"AOD";
         [self onMoveAOD];
         return;

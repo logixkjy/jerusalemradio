@@ -34,11 +34,11 @@
 //#define OPEN_BOARD                  [BASE_URL stringByAppendingPathComponent:@"api/auth/openBoardFromApp"]
 //#define LOGOUT                      [BASE_URL stringByAppendingPathComponent:@"api/auth/logoutInput"]
 
-#define TOKEN_SEND                      @"http://www.goodnews.or.kr/adm/notification/registerDevice"
+#define TOKEN_SEND                      @"https://www.goodnews.or.kr/adm/notification/registerDevice"
 
-#define BASE_URL_KR                     @"http://jerusalemradio.net"
-#define BASE_URL_ES                     @"http://es.jerusalemradio.net"
-#define BASE_URL_PT                     @"http://br.jerusalemradio.net"
+#define BASE_URL_KR                     @"https://jerusalemradio.net"
+#define BASE_URL_ES                     @"https://es.jerusalemradio.net"
+#define BASE_URL_PT                     @"https://br.jerusalemradio.net"
 
 // 한국어
 #define LOGIN_KR                        [BASE_URL_KR stringByAppendingPathComponent:@"/api/auth/login"]
@@ -60,15 +60,15 @@
 #define LOGOUT_KR                       [BASE_URL_KR stringByAppendingPathComponent:@"api/auth/logoutInput"]
 #define NOTICE_KR                       @"http://jerusalemradio.net/notice_app?isApp=yes"
 
-#define PROGRAM_SHARE_KR                @"http://jerusalemradio.net/share/program/p/"
+#define PROGRAM_SHARE_KR                @"https://jerusalemradio.net/share/program/p/"
 
-#define CONTENT_SHARE_KR                @"http://jerusalemradio.net/share/content/c/"
-#define CONTENT_GET_INFO_KR             @"http://jerusalemradio.net/api/content/getInfo/CT_NO/"
+#define CONTENT_SHARE_KR                @"https://jerusalemradio.net/share/content/c/"
+#define CONTENT_GET_INFO_KR             @"https://jerusalemradio.net/api/content/getInfo/CT_NO/"
 
 // 스페인어
 #define LOGIN_ES                        [BASE_URL_ES stringByAppendingPathComponent:@"/api/auth/login"]
 #define ADDRESS_ES                      [BASE_URL_ES stringByAppendingPathComponent:@"/assets_es/json/streaming/addressEs.json"]
-#define LIVEINFO_ES                     @"http://jerusalemfmradio.airtime.pro/api/live-info-v2"
+#define LIVEINFO_ES                     @"https://jerusalemfmradio.airtime.pro/api/live-info-v2"
 #define MAINIMAGE_ES                    [BASE_URL_ES stringByAppendingPathComponent:@"/uploads_es/program/%@"]
 #define PROGRAMLIST_ES                  [BASE_URL_ES stringByAppendingPathComponent:@"/api/program/getList"]
 #define PROGRAMDETAILLIST_ES            [BASE_URL_ES stringByAppendingPathComponent:@"/api/program/view/PR_ID/%@/page/%@"]
@@ -87,7 +87,7 @@
 // 포루투갈어
 #define LOGIN_PT                        [BASE_URL_PT stringByAppendingPathComponent:@"/api/auth/login"]
 #define ADDRESS_PT                      [BASE_URL_PT stringByAppendingPathComponent:@"/assets_br/json/streaming/addressBr.json"]
-#define LIVEINFO_PT                     @"http://radiojerusalem.airtime.pro/api/live-info-v2"
+#define LIVEINFO_PT                     @"https://radiojerusalem.airtime.pro/api/live-info-v2"
 #define MAINIMAGE_PT                    [BASE_URL_PT stringByAppendingPathComponent:@"/uploads_br/program/%@"]
 #define PROGRAMLIST_PT                  [BASE_URL_PT stringByAppendingPathComponent:@"/api/program/getList"]
 #define PROGRAMDETAILLIST_PT            [BASE_URL_PT stringByAppendingPathComponent:@"/api/program/view/PR_ID/%@/page/%@"]

@@ -113,7 +113,7 @@ typedef NSInteger VIDEO_LEVEL;
 #define _CMD_PLAY_NEXT_TRACK    @"play_next_track"
 #define _CMD_PLAY_START         @"play_start"
 
-#define DEFAULT_URL @"http://goodnewstv.kr/assets/podcast"
+#define DEFAULT_URL @"https://goodnewstv.kr/assets/podcast"
 
 #define YOUTUBE_BASE_URL @"https://www.youtube.com/watch?v="
 #define VIMEO_BASE_URL @"https://vimeo.com/"
