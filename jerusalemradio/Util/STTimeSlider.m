@@ -115,7 +115,7 @@
 }
 
 - (float)spaceBetweenPointsCurrent {
-    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    UIInterfaceOrientation interfaceOrientation = self.window.windowScene.interfaceOrientation;
     if (!UIInterfaceOrientationIsLandscape (interfaceOrientation))
         return _spaceBetweenPointsPortrait;
     return _spaceBetweenPointsLandscape;

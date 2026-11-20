@@ -15,6 +15,7 @@
  */
 
 #import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORDirectorySizeTracker.h"
+#import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORConsoleLogger.h"
 
 @interface GDTCORDirectorySizeTracker ()
 
@@ -76,14 +77,19 @@
       includingPropertiesForKeys:prefetchedProperties
                          options:NSDirectoryEnumerationSkipsHiddenFiles
                     errorHandler:^BOOL(NSURL *_Nonnull url, NSError *_Nonnull error) {
+                      GDTCORLogWarning(GDTCORMCWFileReadError,
+                                       @"Error enumerating content size for URL %@: %@", url,
+                                       error);
                       return YES;
                     }];
 
   for (NSURL *fileURL in enumerator) {
-    NSNumber *isRegularFile;
-    [fileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
-    if (isRegularFile.boolValue) {
-      totalBytes += [self fileSizeAtURL:fileURL];
+    @autoreleasepool {
+      NSNumber *isRegularFile;
+      [fileURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:nil];
+      if (isRegularFile.boolValue) {
+        totalBytes += [self fileSizeAtURL:fileURL];
+      }
     }
   }
 

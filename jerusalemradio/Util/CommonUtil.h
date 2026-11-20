@@ -7,30 +7,34 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <objc/runtime.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface CommonUtil : NSObject
 
++ (UIWindow * _Nullable)activeWindow;
++ (void)showMessage:(NSString * _Nullable)message title:(NSString * _Nullable)title from:(UIViewController *)controller completion:(void (^ _Nullable)(void))completion;
 + (CGFloat)getSafaAreaTop;
 + (CGFloat)getSafaAreaBottom;
 
 + (float)resizeFor720:(float)size;
 + (BOOL)isiPhoneXScreen;
-+ (NSString*)changeString:(NSString*)str;
++ (nullable NSString *)changeString:(nullable NSString *)str;
 + (NSInteger)CheckNetworkEnable;
-+ (NSString *)md5StringForString:(NSString *)string;
-+ (NSString *)cacheFolder;
-+ (id)connetcionNetworkWithURL:(NSURL*)url;
-+ (id)jsonParser:(NSString*)str;
-+ (id)jsonParserWithData:(NSData*)data;
-+ (NSString*)jsonStringFromDictionary:(NSDictionary*)data;
-+ (NSString*)getChangeDateFormat:(NSString *)pDate tdateFormat:(NSString*)format changeDateFormat:(NSString*)cFormat;
++ (nullable NSString *)cacheFolder;
++ (nullable id)jsonParser:(NSString*)str;
++ (nullable id)jsonParserWithData:(NSData * _Nullable)data;
++ (nullable NSString *)jsonStringFromDictionary:(NSDictionary*)data;
++ (nullable NSString *)getChangeDateFormat:(NSString *)pDate tdateFormat:(NSString*)format changeDateFormat:(NSString*)cFormat;
 + (NSString*)getPassedTime:(NSString*)time;
-+ (NSDate*)getChangeStringToDate:(NSString*)time;
++ (nullable NSDate *)getChangeStringToDate:(NSString*)time;
 
 + (void) writeIntToDefault:(int) nValue KEY:(NSString *)strKey;
 + (int) readIntFromDefault:(NSString *)strKey;
-+ (void) writeObjectToDefault:(id)idValue KEY:(NSString *)strKey;
-+ (id) readObjectFromDefault:(NSString *)strKey;
++ (void) writeObjectToDefault:(nullable id)idValue KEY:(NSString *)strKey;
++ (nullable id) readObjectFromDefault:(NSString *)strKey;
 + (void) writeBoolToDefault:(BOOL)bValue KEY:(NSString *)strKey;
 + (BOOL) readBoolFromDefault:(NSString *)strKey;
 + (void) writeFloatToDefault:(float) fValue KEY:(NSString *)strKey;
@@ -52,14 +56,13 @@
 + (UIFont *_Nullable)boldSystemFontOfSize720:(CGFloat)size;
 @end
 
-#import <objc/runtime.h>
-
 typedef void (^ActionBlock)(id sender);
 
 @interface UIButton (TranggleExtend)
 
 @property (readonly) NSMutableDictionary *event;
 - (void) handleControlEvent:(UIControlEvents)controlEvent withBlock:(ActionBlock)action;
+- (void)applyContentInsets:(UIEdgeInsets)insets imagePadding:(CGFloat)padding;
 - (void)centerVerticallyWithPadding:(float)padding;
 - (void)centerVertically;
 
@@ -74,3 +77,5 @@ typedef void (^ActionBlock)(id sender);
 
 @end
 
+
+NS_ASSUME_NONNULL_END

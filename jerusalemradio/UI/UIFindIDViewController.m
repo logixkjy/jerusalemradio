@@ -10,7 +10,7 @@
 #import "URLAddressManager.h"
 #import "UIPopupView.h"
 
-@interface UIFindIDViewController () <UIAlertViewDelegate>
+@interface UIFindIDViewController ()
 @property (nonatomic, strong) IBOutlet UITextField *tf_nickName;
 @property (nonatomic, strong) IBOutlet UITextField *tf_mobile;
 @property (nonatomic, strong) IBOutlet UITextView *tv_idList;
@@ -113,9 +113,9 @@
                                       str_idList = [str_idList stringByAppendingFormat:@"\n%@", dic[@"MB_ID"]];
                                   }
                                   str_idList = [NSString stringWithFormat:NSLocalizedString(@"FindID_message", @""), self.tf_nickName.text, str_idList];
-                                  [[[UIAlertView alloc] initWithTitle:@"알림" message:[data[@"status_message"] stringByAppendingString:str_idList] delegate:nil cancelButtonTitle:@"확인" otherButtonTitles:nil, nil] show];
+                                  [CommonUtil showMessage:[data[@"status_message"] stringByAppendingString:str_idList] title:@"알림" from:self completion:nil];
                               } else {
-                                  [[[UIAlertView alloc] initWithTitle:@"알림" message:data[@"status_message"] delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil, nil] show];
+                                  [CommonUtil showMessage:data[@"status_message"] title:@"알림" from:self completion:^{ [self close]; }];
                               }
                           }
                       });
@@ -137,11 +137,6 @@
         return NO;
     }
     return YES;
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    [self close];
 }
 
 -(UIStatusBarStyle)preferredStatusBarStyle {

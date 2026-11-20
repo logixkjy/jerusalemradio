@@ -23,29 +23,9 @@
 
 - (void)removeFromSuperViewFadeout
 {
-    if ([UIView instancesRespondToSelector:@selector(animateWithDuration:animations:completion:)]) {
-        
-        [UIView animateWithDuration:0.2
-                         animations:^{ self.view.alpha = 0.0; }
-                         completion:^(BOOL finished){
-                             
-                             [self.view removeFromSuperview];
-                         }];
-        
-    } else {
-        [UIView beginAnimations:@"FadeIn" context:nil];
-        [UIView setAnimationDuration:0.3];
-        [UIView setAnimationDidStopSelector:@selector(removeFromSuperview)];
-        
-        // Make the animatable changes.
-        self.view.alpha = 0.0;
-        
-        // Commit the changes and perform the animation.
-        [UIView commitAnimations];
-        
-    }
-    
-    [self.view removeFromSuperview];
+    [UIView animateWithDuration:0.2 animations:^{ self.view.alpha = 0; } completion:^(BOOL finished) {
+        [self.view removeFromSuperview];
+    }];
 }
 
 -(BOOL)shouldAutorotate

@@ -95,7 +95,7 @@
     [super layoutSubviews];
     
     CGFloat width = CGRectGetWidth([toastSuperview_ bounds]) - kHorizontalMargin * 2.0f;
-    CGFloat height = [[value_ text] sizeWithFont:[UIFont systemFontOfSize:kFontSize] constrainedToSize:CGSizeMake(width - kTextInset * 2.0f, CGFLOAT_MAX)].height + (kTextInset * 2.0f);
+    CGFloat height = [[value_ text] boundingRectWithSize:CGSizeMake(width - kTextInset * 2.0f, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:kFontSize]} context:nil].size.height + (kTextInset * 2.0f);
     CGFloat y = CGRectGetHeight([toastSuperview_ bounds]) - height - kBottomMargin;
     
     [textLabel_ setFrame:CGRectMake(kTextInset, kTextInset, width - kTextInset * 2.0f, height - kTextInset * 2.0f)];

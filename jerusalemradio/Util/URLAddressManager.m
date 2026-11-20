@@ -269,65 +269,53 @@ static URLAddressManager* g_URLAddressManagerInstance = nil;
 - (void)getLiveInfoCompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
 {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:[URLAddressManager getURL:[URLAddressManager getLocal] type:LIVEINFO]]];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)getAddressListCompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
 {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:[URLAddressManager getURL:[URLAddressManager getLocal] type:ADDRESS]]];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)getProgramInfo:(NSString*)url CompletionHandler:(void (^)(id data, NSError *error))completionHandler
 {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)getComments:(NSString*)url CompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
 {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)sendRegistMembar:(NSString*)url memberID:(NSString*)memberID pw:(NSString*)pw pwConfirm:(NSString*)pwConfirm nickName:(NSString*)nickName mobile:(NSString*)mobile CompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
@@ -344,18 +332,15 @@ static URLAddressManager* g_URLAddressManagerInstance = nil;
     [request setHTTPBody:postData];
     
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             NSLog(@"%s %@",__FUNCTION__,[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)sendLogin:(NSString*)url uid:(NSString*)uid upw:(NSString*)upw CompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
@@ -372,17 +357,14 @@ static URLAddressManager* g_URLAddressManagerInstance = nil;
     [request setHTTPBody:postData];
     
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)sendLogout:(NSString*)url uid:(NSString*)uid CompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
@@ -399,17 +381,14 @@ static URLAddressManager* g_URLAddressManagerInstance = nil;
     [request setHTTPBody:postData];
     
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)idRequest:(NSString*)url nickName:(NSString*)nickName mobile:(NSString*)mobile CompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
@@ -426,17 +405,14 @@ static URLAddressManager* g_URLAddressManagerInstance = nil;
     [request setHTTPBody:postData];
     
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)pwdRequest:(NSString*)url memberID:(NSString*)memberID CompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
@@ -453,17 +429,14 @@ static URLAddressManager* g_URLAddressManagerInstance = nil;
     [request setHTTPBody:postData];
     
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)writeComments:(NSString*)url prID:(NSString*)prID mbID:(NSString*)mbID prContent:(NSString*)prContent CompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
@@ -480,17 +453,14 @@ static URLAddressManager* g_URLAddressManagerInstance = nil;
     [request setHTTPBody:postData];
     
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)deleteComments:(NSString*)url mbID:(NSString*)mbID CompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
@@ -505,33 +475,27 @@ static URLAddressManager* g_URLAddressManagerInstance = nil;
     [request setValue:GetCommonData.MB_TOKEN forHTTPHeaderField:@"MB_TOKEN"];
     [request setHTTPBody:postData];
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)getProgramList:(NSString*)url CompletionHandler:(void (^)(id data, NSError *error))completionHandler
 {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 - (void)sendWithdrawal:(NSString*)userID CompletionHandler:(void (^)(NSDictionary *data, NSError *error))completionHandler
@@ -548,17 +512,14 @@ static URLAddressManager* g_URLAddressManagerInstance = nil;
     [request setHTTPBody:postData];
     
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:queue
-                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *connectionError) {
         if (connectionError != nil) {
             completionHandler(nil, connectionError);
         } else {
             completionHandler([CommonUtil jsonParserWithData:data], connectionError);
         }
-    }];
+    }] resume];
 }
 
 @end

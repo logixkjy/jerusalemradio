@@ -16,7 +16,7 @@ enum {
     UIPopupView_TYPE_TEXTFIELD_UP,
 };
 
-@interface UIPopupView : UIView <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UITextViewDelegate>
+@interface UIPopupView : UIView <UITextFieldDelegate, UITextViewDelegate>
 {
 @private
     NSMutableArray *m_itemList;

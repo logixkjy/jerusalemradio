@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <FMDB.h>
+#import <fmdb/FMDB.h>
 
 @interface DBStorage : NSObject
 

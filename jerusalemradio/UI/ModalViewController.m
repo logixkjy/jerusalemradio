@@ -8,12 +8,14 @@
 
 #import "ModalViewController.h"
 #import "AppDelegate.h"
+#import <WebKit/WebKit.h>
 @import AVFoundation;
 @import AudioToolbox;
 
-@interface ModalViewController () <UIAlertViewDelegate>
+@interface ModalViewController () <WKNavigationDelegate>
 {
     float menuViewH;
+    WKWebView *_webView;
 }
 @end
 
@@ -23,6 +25,11 @@
 {
     [super viewDidLoad];
 
+    _webView = [[WKWebView alloc] initWithFrame:self.webContainer.bounds];
+    _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _webView.navigationDelegate = self;
+    _webView.scrollView.bounces = NO;
+    [self.webContainer addSubview:_webView];
     [self loadMainUrl];
     
     CGFloat y = 0, gap = 0;
@@ -126,7 +133,11 @@
     return YES;
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    decisionHandler([self shouldNavigateRequest:navigationAction.request] ? WKNavigationActionPolicyAllow : WKNavigationActionPolicyCancel);
+}
+
+- (BOOL)shouldNavigateRequest:(NSURLRequest *)request {
     NSString *strUrl = [[request URL] absoluteString];
     [GetCommonData setCURRENT_URL:strUrl];
     NSLog(@"RequestURL[%@]",strUrl);
@@ -150,7 +161,7 @@
     }
     
     if ([strUrl hasPrefix:SAFARI_OPEN]) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[strUrl stringByReplacingOccurrencesOfString:SAFARI_OPEN withString:@"http://"]]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[strUrl stringByReplacingOccurrencesOfString:SAFARI_OPEN withString:@"http://"]] options:@{} completionHandler:nil];
         return NO;
     }
     

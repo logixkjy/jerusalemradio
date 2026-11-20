@@ -578,7 +578,7 @@
                                         <rect key="frame" x="40" y="138" width="240" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="icon_check.png" highlightedImage="icon_checked.png" highlighted="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LzD-WQ-42K">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="icon_check.png" highlightedImage="icon_checked.png" translatesAutoresizingMaskIntoConstraints="NO" id="LzD-WQ-42K">
                                                 <rect key="frame" x="210" y="0.0" width="30" height="30"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                             </imageView>
@@ -1153,17 +1153,11 @@
                                 </subviews>
                                 <color key="backgroundColor" red="0.97451037169999999" green="0.73394644259999997" blue="0.084700874979999993" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
-                            <webView hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U2B-qx-LBB">
-                                <rect key="frame" x="0.0" y="63" width="320" height="504"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </webView>
                         </subviews>
                         <color key="backgroundColor" red="0.94509803920000002" green="0.94901960780000005" blue="0.96470588239999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <connections>
                         <outlet property="headerView" destination="Tha-01-mvh" id="Nzl-MF-NLD"/>
-                        <outlet property="webView" destination="U2B-qx-LBB" id="9oV-qZ-roU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cDk-zr-0iu" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1242,11 +1236,11 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <webView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zD3-g2-VEI">
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zD3-g2-VEI">
                                 <rect key="frame" x="0.0" y="64" width="319" height="405"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </webView>
+                            </view>
                             <view alpha="0.90000000000000002" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OxL-1x-j4X">
                                 <rect key="frame" x="0.0" y="469" width="319" height="99"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
@@ -1582,7 +1576,7 @@
                         <outlet property="noticeView" destination="aVq-vv-cbi" id="S5e-9G-1VP"/>
                         <outlet property="tv_comments" destination="MKy-9e-pkT" id="CVA-KI-Mu8"/>
                         <outlet property="vi_progress" destination="h2o-FO-wX5" id="sWf-Uw-fSv"/>
-                        <outlet property="webView" destination="zD3-g2-VEI" id="vYA-27-zzH"/>
+                        <outlet property="webContainer" destination="zD3-g2-VEI" id="vYA-27-zzH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HQG-73-Ebl" sceneMemberID="firstResponder"/>
@@ -2012,14 +2006,11 @@
                                         </subviews>
                                         <color key="backgroundColor" red="0.93122661110000005" green="0.93119871620000005" blue="0.9312145114" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </view>
-                                    <webView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tYP-zX-fWx">
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tYP-zX-fWx">
                                         <rect key="frame" x="0.0" y="0.0" width="319" height="503"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="Z8E-qx-OV6" id="CNG-9H-2uk"/>
-                                        </connections>
-                                    </webView>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
@@ -2032,7 +2023,7 @@
                         <outlet property="btn_next" destination="A2o-ry-kYe" id="2nj-Wt-pWB"/>
                         <outlet property="btn_pre" destination="p1T-wS-hds" id="51Z-01-oVi"/>
                         <outlet property="headerView" destination="8mz-2s-FDQ" id="VHT-5R-lyq"/>
-                        <outlet property="webView" destination="tYP-zX-fWx" id="RYu-bq-voS"/>
+                        <outlet property="webContainer" destination="tYP-zX-fWx" id="RYu-bq-voS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o8i-4o-ylU" sceneMemberID="firstResponder"/>
@@ -3614,17 +3605,17 @@
                                 </subviews>
                                 <color key="backgroundColor" red="0.97451037169999999" green="0.73394644259999997" blue="0.084700874979999993" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
-                            <webView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9sW-PV-5RO">
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9sW-PV-5RO">
                                 <rect key="frame" x="0.0" y="63" width="319" height="504"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </webView>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.94509803920000002" green="0.94901960780000005" blue="0.96470588239999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <connections>
                         <outlet property="headerView" destination="fJm-Hl-cUz" id="bta-ou-ic9"/>
-                        <outlet property="webView" destination="9sW-PV-5RO" id="vcf-lp-dcf"/>
+                        <outlet property="webContainer" destination="9sW-PV-5RO" id="vcf-lp-dcf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5CM-TY-4N2" userLabel="First Responder" sceneMemberID="firstResponder"/>

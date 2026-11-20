@@ -41,6 +41,7 @@
 @property (nonatomic, strong) NSString *CT_NO;
 @property (nonatomic, strong) NSString *PR_ID;
 @property (nonatomic, strong) NSDictionary *aodData;
+@property (nonatomic, copy) NSArray<NSDictionary *> *playingAODGroupItems;
 @property (nonatomic, strong) NSDictionary *aodMetaData;
 
 @property (nonatomic, strong) NSDictionary *schemesData;

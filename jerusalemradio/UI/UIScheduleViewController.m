@@ -7,9 +7,11 @@
 //
 
 #import "UIScheduleViewController.h"
+#import <WebKit/WebKit.h>
 
 @interface UIScheduleViewController ()
-@property (nonatomic, strong) IBOutlet UIWebView *webView;
+@property (nonatomic, strong) IBOutlet UIView *webContainer;
+@property (nonatomic, strong) WKWebView *webView;
     @property (nonatomic, strong) IBOutlet UILabel *lbl_mainTitle;
 @end
 
@@ -17,6 +19,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.webView = [[WKWebView alloc] initWithFrame:self.webContainer.bounds];
+    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.webContainer addSubview:self.webView];
     // Do any additional setup after loading the view.NSString *post = [NSString stringWithFormat:@"MB_ID=%@&PR_ID=%@",[CommonUtil readObjectFromDefault:@"USER_ID"],GetCommonData.metadata[@"genre"]];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:[URLAddressManager getURL:[URLAddressManager getLocal] type:PAIRING]]];
     
@@ -36,7 +41,7 @@
     self.bottomView.frame = CGRectMake(0, MAIN_SIZE().height - RESIZE(194) - (CommonUtil.getSafaAreaBottom), MAIN_SIZE().width, RESIZE(194) + (CommonUtil.getSafaAreaBottom));
     
     
-    self.webView.frame = CGRectMake(0, CGRectGetMaxY(self.headerView.frame), MAIN_SIZE().width, MAIN_SIZE().height - CGRectGetHeight(self.headerView.frame) - CGRectGetHeight(self.bottomView.frame));
+    self.webContainer.frame = CGRectMake(0, CGRectGetMaxY(self.headerView.frame), MAIN_SIZE().width, MAIN_SIZE().height - CGRectGetHeight(self.headerView.frame) - CGRectGetHeight(self.bottomView.frame));
     
     _lbl_mainTitle.text = NSLocalizedString(@"Pairing_title", @"편성표");
     
@@ -117,13 +122,7 @@
                 ((CommentsCell*)cell).indexPath = indexPath;
                 ((CommentsCell*)cell).btn_delete.hidden = NO;
                 ((CommentsCell*)cell).onDeleteAction = ^(NSIndexPath *indexPath) {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"common_noti", @"알림")
-                                                                    message:NSLocalizedString(@"Comment_delete_message", @"청취소감을 삭제하시겠습니까?")
-                                                                   delegate:self
-                                                          cancelButtonTitle:NSLocalizedString(@"common_cancel", @"취소")
-                                                          otherButtonTitles:NSLocalizedString(@"common_delete", @"삭제"), nil];
-                    alert.tag = indexPath.row;
-                    [alert show];
+                    [self confirmDeleteCommentAtIndexPath:indexPath];
                 };
             } else {
                 ((CommentsCell*)cell).btn_delete.hidden = YES;
@@ -164,15 +163,6 @@
 }
 
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == 1) {
-        [GetURLAddressManager deleteComments:[NSString stringWithFormat:[URLAddressManager getURL:[URLAddressManager getLocal] type:COMMENTSDELETE],self.commentsList[alertView.tag][@"PR_CO_ID"]] mbID:GetCommonData.MB_ID CompletionHandler:^(NSDictionary *data, NSError *error) {
-            if ([data[@"status"] intValue] == 200) {
-                [self getComments];
-            }
-        }];
-    }
-}
+
 
 @end

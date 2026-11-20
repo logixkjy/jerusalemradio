@@ -83,6 +83,12 @@ static NSString *const kFIRInstallationsIIDCreationTimePlistKey = @"|S|cre";
   return [self base64URLEncodedStringWithData:data];
 }
 
+/** FirebaseInstallations SDK uses the SHA1 hash for backwards compatibility with the legacy
+ * FirebaseInstanceID SDK. The SHA1 hash is used to access Instance IDs stored on the device and not
+ * for any security-relevant process. This is a one-time step that allows migration of old client
+ * identifiers. Cryptographic security is not needed here, so potential hash collisions are not a
+ * problem.
+ */
 - (NSData *)sha1WithData:(NSData *)data {
   unsigned char output[CC_SHA1_DIGEST_LENGTH];
   unsigned int length = (unsigned int)[data length];
@@ -197,11 +203,7 @@ static NSString *const kFIRInstallationsIIDCreationTimePlistKey = @"|S|cre";
   NSMutableDictionary *plistContent = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
   plistContent[kFIRInstallationsIIDCreationTimePlistKey] = nil;
 
-  if (@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)) {
-    return [plistContent writeToURL:[NSURL fileURLWithPath:path] error:outError];
-  }
-
-  return [plistContent writeToFile:path atomically:YES];
+  return [plistContent writeToURL:[NSURL fileURLWithPath:path] error:outError];
 }
 
 - (BOOL)hasPlistIIDFlag {

@@ -16,17 +16,20 @@
 
 #import "FirebaseMessaging/Sources/FIRMessagingTopicOperation.h"
 
-#import <FirebaseInstanceID/FIRInstanceID_Private.h>
-
 #import "FirebaseMessaging/Sources/FIRMessagingDefines.h"
 #import "FirebaseMessaging/Sources/FIRMessagingLogger.h"
 #import "FirebaseMessaging/Sources/FIRMessagingUtilities.h"
 #import "FirebaseMessaging/Sources/NSError+FIRMessaging.h"
+#import "FirebaseMessaging/Sources/Token/FIRMessagingTokenManager.h"
+
+#import "FirebaseCore/Extension/FirebaseCoreInternal.h"
+#import "FirebaseInstallations/Source/Library/Private/FirebaseInstallationsInternal.h"
+#import "FirebaseMessaging/Sources/FIRMessagingPubSub.h"
 
 static NSString *const kFIRMessagingSubscribeServerHost =
     @"https://iid.googleapis.com/iid/register";
 
-NSString *FIRMessagingSubscriptionsServer() {
+NSString *FIRMessagingSubscriptionsServer(void) {
   static NSString *serverHost = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -48,7 +51,7 @@ NSString *FIRMessagingSubscriptionsServer() {
 
 @property(nonatomic, readwrite, copy) NSString *topic;
 @property(nonatomic, readwrite, assign) FIRMessagingTopicAction action;
-@property(nonatomic, readwrite, copy) NSString *token;
+@property(nonatomic, readwrite, strong) FIRMessagingTokenManager *tokenManager;
 @property(nonatomic, readwrite, copy) NSDictionary *options;
 @property(nonatomic, readwrite, copy) FIRMessagingTopicOperationCompletion completion;
 
@@ -72,13 +75,13 @@ NSString *FIRMessagingSubscriptionsServer() {
 
 - (instancetype)initWithTopic:(NSString *)topic
                        action:(FIRMessagingTopicAction)action
-                        token:(NSString *)token
+                 tokenManager:(FIRMessagingTokenManager *)tokenManager
                       options:(NSDictionary *)options
                    completion:(FIRMessagingTopicOperationCompletion)completion {
   if (self = [super init]) {
     _topic = topic;
     _action = action;
-    _token = token;
+    _tokenManager = tokenManager;
     _options = options;
     _completion = completion;
 
@@ -90,7 +93,6 @@ NSString *FIRMessagingSubscriptionsServer() {
 
 - (void)dealloc {
   _topic = nil;
-  _token = nil;
   _completion = nil;
 }
 
@@ -130,7 +132,11 @@ NSString *FIRMessagingSubscriptionsServer() {
 
   [self setExecuting:YES];
 
-  [self performSubscriptionChange];
+  if ([FIRMessaging messaging].isInstallationIdEnabled) {
+    [self performFidSubscriptionChange];
+  } else {
+    [self performTokenSubscriptionChange];
+  }
 }
 
 - (void)finishWithError:(NSError *)error {
@@ -155,19 +161,15 @@ NSString *FIRMessagingSubscriptionsServer() {
   [self finishWithError:error];
 }
 
-- (void)performSubscriptionChange {
+- (void)performTokenSubscriptionChange {
   NSURL *url = [NSURL URLWithString:FIRMessagingSubscriptionsServer()];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   NSString *appIdentifier = FIRMessagingAppIdentifier();
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  NSString *deviceAuthID = [FIRInstanceID instanceID].deviceAuthID;
-  NSString *secretToken = [FIRInstanceID instanceID].secretToken;
-  NSString *authString = [NSString stringWithFormat:@"AidLogin %@:%@", deviceAuthID, secretToken];
+  NSString *authString = [NSString
+      stringWithFormat:@"AidLogin %@:%@", _tokenManager.deviceAuthID, _tokenManager.secretToken];
   [request setValue:authString forHTTPHeaderField:@"Authorization"];
   [request setValue:appIdentifier forHTTPHeaderField:@"app"];
-  [request setValue:[FIRInstanceID instanceID].versionInfo forHTTPHeaderField:@"info"];
-#pragma clang diagnostic pop
+  [request setValue:_tokenManager.versionInfo forHTTPHeaderField:@"info"];
   // Topic can contain special characters (like `%`) so encode the value.
   NSCharacterSet *characterSet = [NSCharacterSet URLQueryAllowedCharacterSet];
   NSString *encodedTopic =
@@ -184,8 +186,8 @@ NSString *FIRMessagingSubscriptionsServer() {
   NSMutableString *content = [NSMutableString
       stringWithFormat:@"sender=%@&app=%@&device=%@&"
                        @"app_ver=%@&X-gcm.topic=%@&X-scope=%@",
-                       self.token, appIdentifier, deviceAuthID, FIRMessagingCurrentAppVersion(),
-                       encodedTopic, encodedTopic];
+                       _tokenManager.defaultFCMToken, appIdentifier, _tokenManager.deviceAuthID,
+                       FIRMessagingCurrentAppVersion(), encodedTopic, encodedTopic];
 
   if (self.action == FIRMessagingTopicActionUnsubscribe) {
     [content appendString:@"&delete=true"];
@@ -243,6 +245,132 @@ NSString *FIRMessagingSubscriptionsServer() {
     description = [NSString stringWithFormat:@"com.google.fcm.topics.subscribe: %@", _topic];
   } else {
     description = [NSString stringWithFormat:@"com.google.fcm.topics.unsubscribe: %@", _topic];
+  }
+  self.dataTask.taskDescription = description;
+  [self.dataTask resume];
+}
+
+- (void)performFidSubscriptionChange {
+  FIRMessaging_WEAKIFY(self);
+  FIRInstallations *installations = [FIRInstallations installations];
+  [installations installationIDWithCompletion:^(NSString *_Nullable identifier,
+                                                NSError *_Nullable error) {
+    FIRMessaging_STRONGIFY(self);
+    if (error) {
+      FIRMessagingLoggerError(kFIRMessagingMessageCodeTokenOperationInstallationIdNotAvailable,
+                              @"Failed to get installations ID: %@", error);
+      [self finishWithError:error];
+      return;
+    }
+    if (!identifier.length) {
+      NSError *emptyFidError = [NSError messagingErrorWithCode:kFIRMessagingErrorCodeMissingFid
+                                                 failureReason:@"Installations ID is empty."];
+      [self finishWithError:emptyFidError];
+      return;
+    }
+
+    [installations authTokenWithCompletion:^(FIRInstallationsAuthTokenResult *_Nullable tokenResult,
+                                             NSError *_Nullable authTokenError) {
+      FIRMessaging_STRONGIFY(self);
+      if (authTokenError) {
+        FIRMessagingLoggerError(
+            kFIRMessagingMessageCodeTokenOperationInstallationAuthTokenNotAvailable,
+            @"Failed to get Installations auth token: %@", authTokenError);
+        [self finishWithError:authTokenError];
+        return;
+      }
+      NSString *authToken = tokenResult.authToken;
+      if (!authToken.length) {
+        NSError *emptyTokenError =
+            [NSError messagingErrorWithCode:kFIRMessagingErrorCodeMissingInstallationsAuthToken
+                              failureReason:@"Installations auth token is empty."];
+        [self finishWithError:emptyTokenError];
+        return;
+      }
+
+      [self performFidSubscriptionChangeWithFid:identifier authToken:authToken];
+    }];
+  }];
+}
+
+- (void)performFidSubscriptionChangeWithFid:(NSString *)fid authToken:(NSString *)authToken {
+  FIROptions *options = FIRApp.defaultApp.options;
+  NSString *projectID = options.projectID;
+  NSString *apiKey = options.APIKey;
+
+  if (!projectID.length || !apiKey.length) {
+    NSError *missingInfoError = [NSError messagingErrorWithCode:kFIRMessagingErrorCodeUnknown
+                                                  failureReason:@"Missing project ID or API key."];
+    [self finishWithError:missingInfoError];
+    return;
+  }
+
+  NSString *topicName = [FIRMessagingPubSub removePrefixFromTopic:self.topic];
+  NSCharacterSet *characterSet = [NSCharacterSet URLQueryAllowedCharacterSet];
+  NSString *encodedTopic =
+      [topicName stringByAddingPercentEncodingWithAllowedCharacters:characterSet];
+  if (encodedTopic == nil) {
+    encodedTopic = topicName;
+  }
+
+  NSString *actionString =
+      (self.action == FIRMessagingTopicActionSubscribe) ? @"subscribe" : @"unsubscribe";
+
+  NSString *urlString =
+      [NSString stringWithFormat:@"https://fcmregistrations.googleapis.com/v1/projects/%@/"
+                                 @"registrations/%@/topicSubscriptions/%@:%@",
+                                 projectID, fid, encodedTopic, actionString];
+  NSURL *url = [NSURL URLWithString:urlString];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  [request setHTTPMethod:@"POST"];
+  [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+  [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+  [request setValue:apiKey forHTTPHeaderField:@"X-Goog-Api-Key"];
+  [request setValue:authToken forHTTPHeaderField:@"X-Goog-Firebase-Installations-Auth"];
+
+  FIRMessagingLoggerDebug(kFIRMessagingMessageCodeDebug,
+                          @"FCM FID Topic Subscription Request to %@", urlString);
+
+  FIRMessaging_WEAKIFY(self);
+  void (^requestHandler)(NSData *, NSURLResponse *, NSError *) = ^(
+      NSData *data, NSURLResponse *URLResponse, NSError *error) {
+    FIRMessaging_STRONGIFY(self);
+    if (!self) {
+      return;
+    }
+    if (error) {
+      if (error.code == NSURLErrorCancelled) {
+        return;
+      }
+      FIRMessagingLoggerDebug(kFIRMessagingMessageCodeTopicOption001,
+                              @"FCM FID Topic Subscription HTTP fetch error. Error Code: %ld",
+                              (long)error.code);
+      [self finishWithError:error];
+      return;
+    }
+
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)URLResponse;
+    if (httpResponse.statusCode != 200 && httpResponse.statusCode != 201) {
+      NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+      NSError *serverError = [NSError
+          messagingErrorWithCode:kFIRMessagingErrorCodeUnknown
+                   failureReason:[NSString stringWithFormat:@"Server returned status code %ld: %@",
+                                                            (long)httpResponse.statusCode,
+                                                            responseString]];
+      [self finishWithError:serverError];
+      return;
+    }
+
+    [self finishWithError:nil];
+  };
+
+  NSURLSession *urlSession = [FIRMessagingTopicOperation sharedSession];
+  self.dataTask = [urlSession dataTaskWithRequest:request completionHandler:requestHandler];
+  NSString *description;
+  if (_action == FIRMessagingTopicActionSubscribe) {
+    description = [NSString stringWithFormat:@"com.google.fcm.topics.fid.subscribe: %@", _topic];
+  } else {
+    description = [NSString stringWithFormat:@"com.google.fcm.topics.fid.unsubscribe: %@", _topic];
   }
   self.dataTask.taskDescription = description;
   [self.dataTask resume];

@@ -74,10 +74,11 @@
 - (void)setAodLayout;
 - (void)getComments;
 - (void)playAOD;
++ (BOOL)usesAODGroupsForProgramID:(NSString *)programID;
+- (IBAction)play;
 - (IBAction)playOnAir;
-- (void)reloadTableView;
+- (void)confirmDeleteCommentAtIndexPath:(NSIndexPath *)indexPath;
 
-- (void)onSelectAOD:(NSIndexPath*)indexPath;
 
 - (IBAction)nextTrack;
 - (IBAction)prevTrack;

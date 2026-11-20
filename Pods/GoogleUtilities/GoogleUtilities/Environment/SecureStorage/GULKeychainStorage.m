@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-#import "GoogleUtilities/Environment/Private/GULKeychainStorage.h"
+#import "GoogleUtilities/Environment/Public/GoogleUtilities/GULKeychainStorage.h"
 #import <Security/Security.h>
 
-#if __has_include(<FBLPromises/FBLPromises.h>)
-#import <FBLPromises/FBLPromises.h>
-#else
-#import "FBLPromises.h"
-#endif
-
-#import "GoogleUtilities/Environment/Private/GULKeychainUtils.h"
-#import "GoogleUtilities/Environment/Private/GULSecureCoding.h"
+#import "GoogleUtilities/Environment/Public/GoogleUtilities/GULKeychainUtils.h"
 
 @interface GULKeychainStorage ()
 @property(nonatomic, readonly) dispatch_queue_t keychainQueue;
@@ -32,6 +25,18 @@
 @property(nonatomic, readonly) NSString *service;
 @property(nonatomic, readonly) NSCache<NSString *, id<NSSecureCoding>> *inMemoryCache;
 @end
+
+// Only `nil` and non-string keys are rejected. An empty string is a valid, distinct keychain
+// account (not a wildcard), so rejecting it would strand items already stored under it.
+static BOOL GULKeychainStorageIsValidKey(id key) {
+  return [key isKindOfClass:[NSString class]];
+}
+
+static NSError *GULKeychainStorageErrorWithReason(NSString *reason) {
+  return [NSError errorWithDomain:kGULKeychainUtilsErrorDomain
+                             code:0
+                         userInfo:@{NSLocalizedFailureReasonErrorKey : reason}];
+}
 
 @implementation GULKeychainStorage
 
@@ -57,108 +62,162 @@
 
 #pragma mark - Public
 
-- (FBLPromise<id<NSSecureCoding>> *)getObjectForKey:(NSString *)key
-                                        objectClass:(Class)objectClass
-                                        accessGroup:(nullable NSString *)accessGroup {
-  return [FBLPromise onQueue:self.inMemoryCacheQueue
-                          do:^id _Nullable {
-                            // Return cached object or fail otherwise.
-                            id object = [self.inMemoryCache objectForKey:key];
-                            return object
-                                       ?: [[NSError alloc]
-                                              initWithDomain:FBLPromiseErrorDomain
-                                                        code:FBLPromiseErrorCodeValidationFailure
-                                                    userInfo:nil];
-                          }]
-      .recover(^id _Nullable(NSError *error) {
-        // Look for the object in the keychain.
-        return [self getObjectFromKeychainForKey:key
-                                     objectClass:objectClass
-                                     accessGroup:accessGroup];
-      });
+- (void)getObjectForKey:(NSString *)key
+            objectClass:(Class)objectClass
+            accessGroup:(nullable NSString *)accessGroup
+      completionHandler:
+          (void (^)(id<NSSecureCoding> _Nullable obj, NSError *_Nullable error))completionHandler {
+  if (!GULKeychainStorageIsValidKey(key)) {
+    dispatch_async(self.inMemoryCacheQueue, ^{
+      completionHandler(nil, GULKeychainStorageErrorWithReason(@"Key must be a non-nil string."));
+    });
+    return;
+  }
+  dispatch_async(self.inMemoryCacheQueue, ^{
+    // Return cached object or fail otherwise.
+    id object = [self.inMemoryCache objectForKey:key];
+    if (object) {
+      completionHandler(object, nil);
+    } else {
+      // Look for the object in the keychain.
+      [self getObjectFromKeychainForKey:key
+                            objectClass:objectClass
+                            accessGroup:accessGroup
+                      completionHandler:completionHandler];
+    }
+  });
 }
 
-- (FBLPromise<NSNull *> *)setObject:(id<NSSecureCoding>)object
-                             forKey:(NSString *)key
-                        accessGroup:(nullable NSString *)accessGroup {
-  return [FBLPromise onQueue:self.inMemoryCacheQueue
-                          do:^id _Nullable {
-                            // Save to the in-memory cache first.
-                            [self.inMemoryCache setObject:object forKey:[key copy]];
-                            return [NSNull null];
-                          }]
-      .thenOn(self.keychainQueue, ^id(id result) {
-        // Then store the object to the keychain.
-        NSDictionary *query = [self keychainQueryWithKey:key accessGroup:accessGroup];
-        NSError *error;
-        NSData *encodedObject = [GULSecureCoding archivedDataWithRootObject:object error:&error];
-        if (!encodedObject) {
-          return error;
-        }
+- (void)setObject:(id<NSSecureCoding>)object
+               forKey:(NSString *)key
+          accessGroup:(nullable NSString *)accessGroup
+    completionHandler:
+        (void (^)(id<NSSecureCoding> _Nullable obj, NSError *_Nullable error))completionHandler {
+  // Validate before dispatching: NSCache throws on a nil object, and an exception raised on the
+  // internal queue cannot be caught by the caller and crashes the app.
+  NSString *invalidReason = nil;
+  if (!GULKeychainStorageIsValidKey(key)) {
+    invalidReason = @"Key must be a non-nil string.";
+  } else if (object == nil) {
+    invalidReason = @"Object must not be nil.";
+  }
+  if (invalidReason) {
+    dispatch_async(self.inMemoryCacheQueue, ^{
+      completionHandler(nil, GULKeychainStorageErrorWithReason(invalidReason));
+    });
+    return;
+  }
+  dispatch_async(self.inMemoryCacheQueue, ^{
+    // Save to the in-memory cache first.
+    [self.inMemoryCache setObject:object forKey:[key copy]];
 
-        if (![GULKeychainUtils setItem:encodedObject withQuery:query error:&error]) {
-          return error;
-        }
+    dispatch_async(self.keychainQueue, ^{
+      // Then store the object to the keychain.
+      NSDictionary *query = [self keychainQueryWithKey:key accessGroup:accessGroup];
+      NSError *error;
+      NSData *encodedObject = [NSKeyedArchiver archivedDataWithRootObject:object
+                                                    requiringSecureCoding:YES
+                                                                    error:&error];
+      if (!encodedObject) {
+        completionHandler(nil, error);
+        return;
+      }
 
-        return [NSNull null];
-      });
+      if (![GULKeychainUtils setItem:encodedObject withQuery:query error:&error]) {
+        completionHandler(nil, error);
+        return;
+      }
+
+      completionHandler(object, nil);
+    });
+  });
 }
 
-- (FBLPromise<NSNull *> *)removeObjectForKey:(NSString *)key
-                                 accessGroup:(nullable NSString *)accessGroup {
-  return [FBLPromise onQueue:self.inMemoryCacheQueue
-                          do:^id _Nullable {
-                            [self.inMemoryCache removeObjectForKey:key];
-                            return nil;
-                          }]
-      .thenOn(self.keychainQueue, ^id(id result) {
-        NSDictionary *query = [self keychainQueryWithKey:key accessGroup:accessGroup];
+- (void)removeObjectForKey:(NSString *)key
+               accessGroup:(nullable NSString *)accessGroup
+         completionHandler:(void (^)(NSError *_Nullable error))completionHandler {
+  // A nil key would drop kSecAttrAccount from the query, which could remove other items stored
+  // for the same service.
+  if (!GULKeychainStorageIsValidKey(key)) {
+    dispatch_async(self.inMemoryCacheQueue, ^{
+      completionHandler(GULKeychainStorageErrorWithReason(@"Key must be a non-nil string."));
+    });
+    return;
+  }
+  dispatch_async(self.inMemoryCacheQueue, ^{
+    [self.inMemoryCache removeObjectForKey:key];
+    dispatch_async(self.keychainQueue, ^{
+      NSDictionary *query = [self keychainQueryWithKey:key accessGroup:accessGroup];
 
-        NSError *error;
-        if (![GULKeychainUtils removeItemWithQuery:query error:&error]) {
-          return error;
-        }
-
-        return [NSNull null];
-      });
+      NSError *error;
+      if (![GULKeychainUtils removeItemWithQuery:query error:&error]) {
+        completionHandler(error);
+      } else {
+        completionHandler(nil);
+      }
+    });
+  });
 }
 
 #pragma mark - Private
 
-- (FBLPromise<id<NSSecureCoding>> *)getObjectFromKeychainForKey:(NSString *)key
-                                                    objectClass:(Class)objectClass
-                                                    accessGroup:(nullable NSString *)accessGroup {
+- (void)getObjectFromKeychainForKey:(NSString *)key
+                        objectClass:(Class)objectClass
+                        accessGroup:(nullable NSString *)accessGroup
+                  completionHandler:(void (^)(id<NSSecureCoding> _Nullable obj,
+                                              NSError *_Nullable error))completionHandler {
   // Look for the object in the keychain.
-  return [FBLPromise
-             onQueue:self.keychainQueue
-                  do:^id {
-                    NSDictionary *query = [self keychainQueryWithKey:key accessGroup:accessGroup];
-                    NSError *error;
-                    NSData *encodedObject = [GULKeychainUtils getItemWithQuery:query error:&error];
+  dispatch_async(self.keychainQueue, ^{
+    NSDictionary *query = [self keychainQueryWithKey:key accessGroup:accessGroup];
+    NSError *error;
+    NSData *encodedObject = [GULKeychainUtils getItemWithQuery:query error:&error];
 
-                    if (error) {
-                      return error;
-                    }
-                    if (!encodedObject) {
-                      return nil;
-                    }
-                    id object = [GULSecureCoding unarchivedObjectOfClass:objectClass
-                                                                fromData:encodedObject
-                                                                   error:&error];
-                    if (error) {
-                      return error;
-                    }
+    if (error) {
+      completionHandler(nil, error);
+      return;
+    }
+    if (!encodedObject) {
+      completionHandler(nil, nil);
+      return;
+    }
+    id object = [[self class] unarchivedObjectOfClass:objectClass
+                                             fromData:encodedObject
+                                                error:&error];
+    if (error) {
+      completionHandler(nil, error);
+      return;
+    }
 
-                    return object;
-                  }]
-      .thenOn(self.inMemoryCacheQueue,
-              ^id<NSSecureCoding> _Nullable(id<NSSecureCoding> _Nullable object) {
-                // Save object to the in-memory cache if exists and return the object.
-                if (object) {
-                  [self.inMemoryCache setObject:object forKey:[key copy]];
-                }
-                return object;
-              });
+    dispatch_async(self.inMemoryCacheQueue, ^{
+      // Save object to the in-memory cache if exists and return the object.
+      if (object) {
+        [self.inMemoryCache setObject:object forKey:[key copy]];
+      }
+
+      completionHandler(object, nil);
+    });
+  });
+}
+
+/// Decodes an object read from the keychain, reporting any failure through `outError`.
+///
+/// `+[NSKeyedUnarchiver unarchivedObjectOfClass:fromData:error:]` returns an error for malformed
+/// archives, but an exception raised by the decoded class's `-initWithCoder:` (for example while
+/// decoding corrupted data), or by a `nil` `objectClass`, still propagates. This runs on
+/// `keychainQueue`, where the caller cannot catch the exception, so it would crash the app.
++ (nullable id)unarchivedObjectOfClass:(Class)objectClass
+                              fromData:(NSData *)data
+                                 error:(NSError **)outError {
+  @try {
+    return [NSKeyedUnarchiver unarchivedObjectOfClass:objectClass fromData:data error:outError];
+  } @catch (NSException *exception) {
+    if (outError) {
+      NSString *reason = [NSString stringWithFormat:@"Failed to decode keychain item: %@: %@",
+                                                    exception.name, exception.reason];
+      *outError = GULKeychainStorageErrorWithReason(reason);
+    }
+    return nil;
+  }
 }
 
 - (void)resetInMemoryCache {
@@ -179,12 +238,18 @@
     query[(__bridge NSString *)kSecAttrAccessGroup] = accessGroup;
   }
 
+  if (@available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 6.0, *)) {
+    // Ensures that the keychain query behaves the same across all platforms.
+    // See go/firebase-macos-keychain-popups for details.
+    query[(__bridge id)kSecUseDataProtectionKeychain] = (__bridge id)kCFBooleanTrue;
+  }
+
 #if TARGET_OS_OSX
   if (self.keychainRef) {
     query[(__bridge NSString *)kSecUseKeychain] = (__bridge id)(self.keychainRef);
     query[(__bridge NSString *)kSecMatchSearchList] = @[ (__bridge id)(self.keychainRef) ];
   }
-#endif  // TARGET_OSX
+#endif  // TARGET_OS_OSX
 
   return query;
 }

@@ -10,7 +10,7 @@
 #import "URLAddressManager.h"
 #import "UIPopupView.h"
 
-@interface UIFindPWViewController () <UIAlertViewDelegate>
+@interface UIFindPWViewController ()
 @property (nonatomic, strong) IBOutlet UITextField *tf_id;
     
     @property (nonatomic, strong) IBOutlet UILabel *lbl_title;
@@ -101,9 +101,9 @@
 //                               [self.view makeToast:@"비밀번호 재설정에 실패했습니다."];
                            } else {
                                if ([data[@"status"] intValue] == 200) {
-                                   [[[UIAlertView alloc] initWithTitle:@"알림" message:data[@"status_message"] delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil, nil] show];
+                                   [CommonUtil showMessage:data[@"status_message"] title:@"알림" from:self completion:^{ [self close]; }];
                                } else {
-                                   [[[UIAlertView alloc] initWithTitle:@"알림" message:data[@"status_message"] delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil, nil] show];
+                                   [CommonUtil showMessage:data[@"status_message"] title:@"알림" from:self completion:^{ [self close]; }];
                                }
                                [self.view makeToast:NSLocalizedString(@"FindPW_success", @"안내 메일을 보냈습니다.")];
                            }
@@ -126,11 +126,6 @@
         return NO;
     }
     return YES;
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    [self close];
 }
 
 -(UIStatusBarStyle)preferredStatusBarStyle {

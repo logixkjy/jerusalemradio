@@ -26,6 +26,8 @@
 @property (strong, nonatomic) ModalViewController *modalView;
 
 
+- (BOOL)handleOpenURL:(NSURL *)url;
+- (void)handleRemoteNotification:(NSDictionary *)userInfo;
 - (void)startAnimatedLodingView;
 - (void)stopAnimatedLodingView;
 

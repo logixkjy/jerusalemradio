@@ -1,0 +1,6 @@
+module Pods_jerusalemradio {
+  umbrella header "Pods-jerusalemradio-umbrella.h"
+
+  export *
+  module * { export * }
+}

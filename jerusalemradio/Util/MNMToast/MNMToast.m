@@ -185,7 +185,7 @@
     if ([currentToastView_ superview] == nil && [queue_ count] > 0) {
         
         MNMToastValue *value = [queue_ objectAtIndex:0];
-        UIViewController *controller = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+        UIViewController *controller = [[CommonUtil activeWindow] rootViewController];
         
         if ([controller isKindOfClass:[UITabBarController class]]) {
             

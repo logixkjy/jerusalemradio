@@ -7,17 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ModalViewController.h"
 @import MessageUI;
 
-@interface ModalViewController : UIViewController <UIScrollViewDelegate, UIWebViewDelegate> {
+@interface ModalViewController : UIViewController <UIScrollViewDelegate> {
     
     UIView *_backView;
     UIView *_menuView;
     
     BOOL isLoadingView;
 }
-@property (nonatomic, strong) IBOutlet UIWebView *webView;
+@property (nonatomic, strong) IBOutlet UIView *webContainer;
 @property (nonatomic, strong) IBOutlet UIButton *btn_pre;
 @property (nonatomic, strong) IBOutlet UIButton *btn_next;
 @property (nonatomic, strong) IBOutlet UIButton *btn_more;

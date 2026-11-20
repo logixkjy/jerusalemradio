@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0 ||                                          \
-    __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_14 || __TV_OS_VERSION_MAX_ALLOWED >= __TV_10_0 || \
-    __WATCH_OS_VERSION_MAX_ALLOWED >= __WATCHOS_3_0 || TARGET_OS_MACCATALYST
+
 #import <UserNotifications/UserNotifications.h>
-#endif
 
 #import "FirebaseMessaging/Sources/FIRMessagingContextManagerService.h"
 
@@ -25,7 +22,7 @@
 #import "FirebaseMessaging/Sources/FIRMessagingLogger.h"
 #import "FirebaseMessaging/Sources/FIRMessagingUtilities.h"
 
-#import "GoogleUtilities/AppDelegateSwizzler/Private/GULAppDelegateSwizzler.h"
+#import <GoogleUtilities/GULAppDelegateSwizzler.h>
 
 #define kFIRMessagingContextManagerPrefix @"gcm."
 #define kFIRMessagingContextManagerPrefixKey @"google.c.cm."
@@ -64,13 +61,20 @@ typedef NS_ENUM(NSUInteger, FIRMessagingContextManagerMessageType) {
   FIRMessagingContextManagerMessageTypeLocalTime,
 };
 
+@interface FIRMessagingContextManagerService ()
+
++ (void)scheduleLocalNotificationForMessage:(NSDictionary *)message atDate:(NSDate *)date;
+
+@end
+
 @implementation FIRMessagingContextManagerService
 
 + (BOOL)isContextManagerMessage:(NSDictionary *)message {
   // For now we only support local time in ContextManager.
   if (![message[kFIRMessagingContextManagerLocalTimeStart] length]) {
-    FIRMessagingLoggerDebug(kFIRMessagingMessageCodeContextManagerService000,
-                            @"Received message missing local start time, dropped.");
+    FIRMessagingLoggerDebug(
+        kFIRMessagingMessageCodeContextManagerService000,
+        @"Received message missing local start time, not a contextual message.");
     return NO;
   }
 
@@ -136,116 +140,78 @@ typedef NS_ENUM(NSUInteger, FIRMessagingContextManagerMessageType) {
   return YES;
 }
 
-+ (void)scheduleiOS10LocalNotificationForMessage:(NSDictionary *)message atDate:(NSDate *)date {
-  NSCalendar *calendar = [NSCalendar currentCalendar];
-  if (@available(macOS 10.14, iOS 10.0, watchOS 3.0, tvOS 10.0, *)) {
-    NSCalendarUnit unit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay |
-                          NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
-    NSDateComponents *dateComponents = [calendar components:(NSCalendarUnit)unit fromDate:date];
-    UNCalendarNotificationTrigger *trigger =
-        [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents repeats:NO];
-
-    UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-    NSDictionary *apsDictionary = message;
-
-    // Badge is universal
-    if (apsDictionary[kFIRMessagingContextManagerBadgeKey]) {
-      content.badge = apsDictionary[kFIRMessagingContextManagerBadgeKey];
-    }
-#if TARGET_OS_IOS || TARGET_OS_OSX || TARGET_OS_WATCH
-    // The following fields are not available on tvOS
-    if ([apsDictionary[kFIRMessagingContextManagerBodyKey] length]) {
-      content.body = apsDictionary[kFIRMessagingContextManagerBodyKey];
-    }
-    if ([apsDictionary[kFIRMessagingContextManagerTitleKey] length]) {
-      content.title = apsDictionary[kFIRMessagingContextManagerTitleKey];
-    }
-
-    if (apsDictionary[kFIRMessagingContextManagerSoundKey]) {
-      content.sound = apsDictionary[kFIRMessagingContextManagerSoundKey];
-    }
-
-    if (apsDictionary[kFIRMessagingContextManagerCategoryKey]) {
-      content.categoryIdentifier = apsDictionary[kFIRMessagingContextManagerCategoryKey];
-    }
-
-    NSDictionary *userInfo = [self parseDataFromMessage:message];
-    if (userInfo.count) {
-      content.userInfo = userInfo;
-    }
-#endif
-    NSString *identifier = apsDictionary[kFIRMessagingID];
-    if (!identifier) {
-      identifier = [NSUUID UUID].UUIDString;
-    }
-
-    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier
-                                                                          content:content
-                                                                          trigger:trigger];
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center addNotificationRequest:request
-             withCompletionHandler:^(NSError *_Nullable error) {
-               if (error) {
-                 FIRMessagingLoggerError(
-                     kFIRMessagingMessageCodeContextManagerServiceFailedLocalSchedule,
-                     @"Failed scheduling local timezone notification: %@.", error);
-               }
-             }];
-  }
-}
-
 + (void)scheduleLocalNotificationForMessage:(NSDictionary *)message atDate:(NSDate *)date {
-  if (@available(macOS 10.14, iOS 10.0, watchOS 3.0, tvOS 10.0, *)) {
-    [self scheduleiOS10LocalNotificationForMessage:message atDate:date];
+  if (!date) {
+    FIRMessagingLoggerError(kFIRMessagingMessageCodeContextManagerServiceFailedLocalSchedule,
+                            @"Cannot schedule local timezone notification with a nil date.");
     return;
   }
-#if TARGET_OS_IOS
-  NSDictionary *apsDictionary = message;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  UILocalNotification *notification = [[UILocalNotification alloc] init];
-#pragma clang diagnostic pop
 
-  // A great way to understand timezones and UILocalNotifications
-  // http://stackoverflow.com/questions/18424569/understanding-uilocalnotification-timezone
-  notification.timeZone = [NSTimeZone defaultTimeZone];
-  notification.fireDate = date;
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSCalendarUnit unit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay |
+                        NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+  NSDateComponents *dateComponents = [calendar components:(NSCalendarUnit)unit fromDate:date];
+  UNCalendarNotificationTrigger *trigger =
+      [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents repeats:NO];
 
-  // In the current solution all of the display stuff goes into a special "aps" dictionary
-  // being sent in the message.
-  if ([apsDictionary[kFIRMessagingContextManagerBodyKey] length]) {
-    notification.alertBody = apsDictionary[kFIRMessagingContextManagerBodyKey];
+  UNMutableNotificationContent *content = [self contentFromContextualMessage:message];
+  NSString *identifier = message[kFIRMessagingID];
+  if (!identifier) {
+    identifier = [NSUUID UUID].UUIDString;
   }
-  if (@available(iOS 8.2, *)) {
-    if ([apsDictionary[kFIRMessagingContextManagerTitleKey] length]) {
-      notification.alertTitle = apsDictionary[kFIRMessagingContextManagerTitleKey];
-    }
+
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier
+                                                                        content:content
+                                                                        trigger:trigger];
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center
+      addNotificationRequest:request
+       withCompletionHandler:^(NSError *_Nullable error) {
+         if (error) {
+           FIRMessagingLoggerError(kFIRMessagingMessageCodeContextManagerServiceFailedLocalSchedule,
+                                   @"Failed scheduling local timezone notification: %@.", error);
+         }
+       }];
+}
+
++ (UNMutableNotificationContent *)contentFromContextualMessage:(NSDictionary *)message {
+  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+  NSDictionary *apsDictionary = message;
+
+  // Badge is universal
+  if (apsDictionary[kFIRMessagingContextManagerBadgeKey]) {
+    content.badge = apsDictionary[kFIRMessagingContextManagerBadgeKey];
+  }
+#if !TARGET_OS_TV
+  // The following fields are not available on tvOS
+  if ([apsDictionary[kFIRMessagingContextManagerBodyKey] length]) {
+    content.body = apsDictionary[kFIRMessagingContextManagerBodyKey];
+  }
+
+  if ([apsDictionary[kFIRMessagingContextManagerTitleKey] length]) {
+    content.title = apsDictionary[kFIRMessagingContextManagerTitleKey];
   }
 
   if (apsDictionary[kFIRMessagingContextManagerSoundKey]) {
-    notification.soundName = apsDictionary[kFIRMessagingContextManagerSoundKey];
+#if !TARGET_OS_WATCH
+    // UNNotificationSound soundNamded: is not available in watchOS
+    content.sound =
+        [UNNotificationSound soundNamed:apsDictionary[kFIRMessagingContextManagerSoundKey]];
+#else   // !TARGET_OS_WATCH
+    content.sound = [UNNotificationSound defaultSound];
+#endif  // !TARGET_OS_WATCH
   }
-  if (apsDictionary[kFIRMessagingContextManagerBadgeKey]) {
-    notification.applicationIconBadgeNumber =
-        [apsDictionary[kFIRMessagingContextManagerBadgeKey] integerValue];
-  }
+
   if (apsDictionary[kFIRMessagingContextManagerCategoryKey]) {
-    notification.category = apsDictionary[kFIRMessagingContextManagerCategoryKey];
+    content.categoryIdentifier = apsDictionary[kFIRMessagingContextManagerCategoryKey];
   }
 
   NSDictionary *userInfo = [self parseDataFromMessage:message];
   if (userInfo.count) {
-    notification.userInfo = userInfo;
+    content.userInfo = userInfo;
   }
-  UIApplication *application = [GULAppDelegateSwizzler sharedApplication];
-  if (!application) {
-    return;
-  }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [application scheduleLocalNotification:notification];
-#pragma clang diagnostic pop
-#endif
+#endif  // !TARGET_OS_TV
+  return content;
 }
 
 + (NSDictionary *)parseDataFromMessage:(NSDictionary *)message {

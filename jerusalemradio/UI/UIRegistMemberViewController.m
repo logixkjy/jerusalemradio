@@ -8,7 +8,7 @@
 
 #import "UIRegistMemberViewController.h"
 
-@interface UIRegistMemberViewController () <UIAlertViewDelegate>
+@interface UIRegistMemberViewController ()
 {
     UITextField *activeField;
 }
@@ -174,21 +174,16 @@
                                      [self.view makeToast:NSLocalizedString(@"Join_fail", @"회원가입에 실패했습니다.")];
                                  } else {
                                      if ([data[@"status"] intValue] == 200) {
-                                         [[[UIAlertView alloc] initWithTitle:@"알림" message:data[@"status_message"] delegate:self cancelButtonTitle:@"확인" otherButtonTitles:nil, nil] show];
+                                         [CommonUtil showMessage:data[@"status_message"] title:@"알림" from:self completion:^{ [self close]; }];
                                          
                                          [self.view makeToast:NSLocalizedString(@"Join_success", @"회원가입을 완료했습니다.")];
                                      } else {
-                                         [[[UIAlertView alloc] initWithTitle:@"알림" message:data[@"status_message"] delegate:nil cancelButtonTitle:@"확인" otherButtonTitles:nil, nil] show];
+                                         [CommonUtil showMessage:data[@"status_message"] title:@"알림" from:self completion:nil];
                                      }
                                      
                                  }
                              });
                          }];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    [self close];
 }
 
 - (BOOL)checkEmail:(NSString *)email
@@ -262,24 +257,22 @@
     CGSize size = MAIN_SIZE();
     NSLog(@"tf_y ===> [%lf][%lf][%lf]",origin.y + tfSize.height ,(size.height-260),-((origin.y + tfSize.height + 50) - (size.height-260)));
     if (origin.y + tfSize.height + 60 > (size.height-260)) {
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.3];
+        [UIView animateWithDuration:0.3 animations:^{
         
         [self.view setFrame:CGRectMake(0, -(( origin.y + tfSize.height + 60 ) - (size.height-260)), 320, size.height)];
         
-        [UIView commitAnimations];
+        }];
     }
     
 }
 
 -(void)moveViewDown {
     CGSize size = MAIN_SIZE();
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.1];
+    [UIView animateWithDuration:0.1 animations:^{
     
     [self.view setFrame:CGRectMake(0, 0, 320, size.height)];
     
-    [UIView commitAnimations];
+    }];
 }
 
 

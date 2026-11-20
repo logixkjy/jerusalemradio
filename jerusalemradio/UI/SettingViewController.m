@@ -10,7 +10,7 @@
 #import "UILoginViewController.h"
 #import "UIIntroViewController.h"
 
-@interface SettingViewController () <UIActionSheetDelegate>
+@interface SettingViewController ()
 @property (nonatomic, strong) IBOutlet UILabel *lbl_userID;
 @property (nonatomic, strong) IBOutlet UISwitch *sw_autoLogin;
 @property (nonatomic, strong) IBOutlet UIButton *btn_withDrawal;
@@ -156,13 +156,12 @@
 
 - (IBAction)moveSettingPage
 {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
 }
 
 - (IBAction)viewDeveloperInfo
 {
-    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"setting_developer_title", @"개발자 정보")
-                                message:NSLocalizedString(@"setting_developer_message", @"Team GIV\nhttp://volunteers.gnn.or.kr") delegate:nil cancelButtonTitle:NSLocalizedString(@"common_ok", @"확인") otherButtonTitles:nil, nil] show];
+    [CommonUtil showMessage:NSLocalizedString(@"setting_developer_message", @"Team GIV\nhttp://volunteers.gnn.or.kr") title:NSLocalizedString(@"setting_developer_title", @"개발자 정보") from:self completion:nil];
 }
 
 - (IBAction)setLiveLevel
@@ -256,41 +255,11 @@
         
         [view addAction:itemCancel];
         
+        view.popoverPresentationController.sourceView = self.view;
+        view.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds), 1, 1);
         [self presentViewController:view animated:YES completion:nil];
     }
-    else {
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"닫기" destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"setting_quality_high", @"일반 (96kbps)"),NSLocalizedString(@"setting_quality_low", @"저속 (32kbps)"),nil];
-        actionSheet.tag = 1001;
-        UIView *keyView = [[[[UIApplication sharedApplication] keyWindow] subviews] objectAtIndex:0];
-        [actionSheet showInView:keyView];
-    }
-}
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (actionSheet.tag == 1001) {
-        if (buttonIndex == 0) {
-            [CommonUtil writeObjectToDefault:@"NOMAL" KEY:@"LIVE_LEVEL"];
-            [_btn_liveLevel setTitle:NSLocalizedString(@"setting_quality_high", @"일반 (96kbps)") forState:UIControlStateNormal];
-        } else {
-            [CommonUtil writeObjectToDefault:@"LOW" KEY:@"LIVE_LEVEL"];
-            [_btn_liveLevel setTitle:NSLocalizedString(@"setting_quality_low", @"저속 (32kbps)") forState:UIControlStateNormal];
-        }
-        [self.mainDelegate.avAudioPlayer stop];
-        GetCommonData.audio_mode = @"";
-        [self playOnAir];
-    } else {
-        if (buttonIndex == 0) {
-            [CommonUtil writeObjectToDefault:@"KR" KEY:@"LANG_CODE"];
-            [_btn_langSetting setTitle:NSLocalizedString(@"local_kr", @"한국어") forState:UIControlStateNormal];
-        } else if (buttonIndex == 1) {
-            [CommonUtil writeObjectToDefault:@"ES" KEY:@"LANG_CODE"];
-            [_btn_langSetting setTitle:NSLocalizedString(@"local_es", @"스페인어") forState:UIControlStateNormal];
-        } else {
-            [CommonUtil writeObjectToDefault:@"PT" KEY:@"LANG_CODE"];
-            [_btn_langSetting setTitle:NSLocalizedString(@"local_pt", @"포르투갈어") forState:UIControlStateNormal];
-        }
-    }
 }
 
 - (void)alertAction:(UIAlertAction *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -359,17 +328,11 @@
         
         [view addAction:itemCancel];
         
+        view.popoverPresentationController.sourceView = self.view;
+        view.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds), 1, 1);
         [self presentViewController:view animated:YES completion:nil];
     }
-    else {
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"close", @"닫기") destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"local_kr", @"한국어"),
-                                      NSLocalizedString(@"local_es", @"스페인어"),
-                                      NSLocalizedString(@"local_pt", @"포르투갈어"),
-                                      nil];
-        actionSheet.tag = 1002;
-        UIView *keyView = [[[[UIApplication sharedApplication] keyWindow] subviews] objectAtIndex:0];
-        [actionSheet showInView:keyView];
-    }
+
 }
 
 - (void)alertAction2:(UIAlertAction *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex

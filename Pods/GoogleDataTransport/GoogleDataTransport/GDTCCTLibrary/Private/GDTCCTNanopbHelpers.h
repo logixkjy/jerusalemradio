@@ -16,10 +16,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORReachability.h"
 #import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCOREvent.h"
-#import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORReachability.h"
+#import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORProductData.h"
 
 #import "GoogleDataTransport/GDTCCTLibrary/Protogen/nanopb/cct.nanopb.h"
+#import "GoogleDataTransport/GDTCCTLibrary/Protogen/nanopb/compliance.nanopb.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param string The string to convert.
  * @return A newly allocated array of bytes representing the UTF8 encoding of the string.
  */
-pb_bytes_array_t *GDTCCTEncodeString(NSString *string);
+pb_bytes_array_t *_Nullable GDTCCTEncodeString(NSString *string);
 
 /** Converts an NSData to a pb_bytes_array_t*.
  *
@@ -41,7 +43,7 @@ pb_bytes_array_t *GDTCCTEncodeString(NSString *string);
  * @param data The data to convert.
  * @return A newly allocated array of bytes with [data bytes] copied into it.
  */
-pb_bytes_array_t *GDTCCTEncodeData(NSData *data);
+pb_bytes_array_t *_Nullable GDTCCTEncodeData(NSData *data);
 
 #pragma mark - CCT object constructors
 
@@ -83,6 +85,13 @@ gdt_cct_LogRequest GDTCCTConstructLogRequest(int32_t logSource, NSSet<GDTCOREven
 FOUNDATION_EXPORT
 gdt_cct_LogEvent GDTCCTConstructLogEvent(GDTCOREvent *event);
 
+/** Constructs a `gdt_cct_ComplianceData` given a `GDTCORProductData` instance.
+ *
+ * @param productData The product data to convert to compliance data.
+ */
+FOUNDATION_EXPORT
+gdt_cct_ComplianceData GDTCCTConstructComplianceData(GDTCORProductData *productData);
+
 /** Constructs a gdt_cct_ClientInfo representing the client device.
  *
  * @return The new gdt_cct_ClientInfo object.
@@ -96,6 +105,13 @@ gdt_cct_ClientInfo GDTCCTConstructClientInfo(void);
  */
 FOUNDATION_EXPORT
 gdt_cct_IosClientInfo GDTCCTConstructiOSClientInfo(void);
+
+/** Constructs a gdt_cct_MacClientInfo representing the client device.
+ *
+ * @return The new gdt_cct_MacClientInfo object.
+ */
+FOUNDATION_EXPORT
+gdt_cct_MacClientInfo GDTCCTConstructMacClientInfo(void);
 
 /** Constructs the data of a gdt_cct_NetworkConnectionInfo representing the client nework connection
  * information.

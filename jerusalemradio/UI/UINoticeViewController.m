@@ -7,10 +7,12 @@
 //
 
 #import "UINoticeViewController.h"
+#import <WebKit/WebKit.h>
 
-@interface UINoticeViewController () <UIWebViewDelegate>
+@interface UINoticeViewController ()
 
-@property (nonatomic, strong) IBOutlet UIWebView *webView;
+@property (nonatomic, strong) IBOutlet UIView *webContainer;
+@property (nonatomic, strong) WKWebView *webView;
 
 @end
 
@@ -18,6 +20,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.webView = [[WKWebView alloc] initWithFrame:self.webContainer.bounds];
+    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.webContainer addSubview:self.webView];
     
     NSString *url = [URLAddressManager getURL:[URLAddressManager getLocal] type:NOTICE];
     
@@ -30,7 +35,7 @@
     [_webView loadRequest:request];
     
     self.headerView.frame = CGRectMake(0, 0, MAIN_SIZE().width, CommonUtil.getSafaAreaTop + 44);
-    self.webView.frame = CGRectMake(0, CommonUtil.getSafaAreaTop + 44, MAIN_SIZE().width, MAIN_SIZE().height - (CommonUtil.getSafaAreaTop + 44));
+    self.webContainer.frame = CGRectMake(0, CommonUtil.getSafaAreaTop + 44, MAIN_SIZE().width, MAIN_SIZE().height - (CommonUtil.getSafaAreaTop + 44));
 }
 
 - (void)didReceiveMemoryWarning {

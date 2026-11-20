@@ -9,7 +9,7 @@
 #import "UIAODListViewController.h"
 #import "UIAODSubListViewController.h"
 
-@interface UIAODListViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface UIAODListViewController () <UICollectionViewDelegateFlowLayout, UICollectionViewDataSource>
 @property (nonatomic, strong) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, strong) IBOutlet UILabel *lbl_mainTitle;
 @end
@@ -22,8 +22,8 @@
     __weak typeof(self) weakSelf = self;
     self.collectionView.bounces = NO;
     [GetURLAddressManager getProgramInfo:[URLAddressManager getURL:[URLAddressManager getLocal] type:PROGRAMLIST] CompletionHandler:^(NSArray *data, NSError *error) {
-        weakSelf.arr_programList = data;
         dispatch_async(dispatch_get_main_queue(), ^{
+            weakSelf.arr_programList = data;
             [weakSelf.collectionView reloadData];
         });
     }];
@@ -42,12 +42,13 @@
     self.bottomView.frame = CGRectMake(0, MAIN_SIZE().height - RESIZE(194) - (CommonUtil.getSafaAreaBottom), MAIN_SIZE().width, RESIZE(194) + (CommonUtil.getSafaAreaBottom));
     
     UIAODListCollectionViewFlowLayout *collectionViewLayout = [[UIAODListCollectionViewFlowLayout alloc] init];
-    self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(RESIZE(44), CGRectGetMaxY(self.headerView.frame) + RESIZE(25), MAIN_SIZE().width - RESIZE(88), MAIN_SIZE().height - CGRectGetHeight(self.headerView.frame) - CGRectGetHeight(self.bottomView.frame) - RESIZE(50)) collectionViewLayout:collectionViewLayout];
+    self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
+    self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
     
     [self.collectionView setBackgroundColor:[UIColor clearColor]];
-    [self.collectionView setPagingEnabled:YES];
+    self.collectionView.pagingEnabled = NO;
     [self.collectionView registerClass:[UIAODListCollectionViewCell class]
               forCellWithReuseIdentifier:UIAODListCollectionViewCellIdentifier];
     
@@ -83,6 +84,12 @@
     if (self.PR_ID.length > 0 && self.PR_NAME.length > 0) {
         [self onSelectAOD:self.PR_ID PR_NAME:self.PR_NAME];
     }
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    CGFloat top = CGRectGetMaxY(self.headerView.frame) + 12;
+    self.collectionView.frame = CGRectMake(16, top, MAX(0, self.view.bounds.size.width - 32), MAX(0, CGRectGetMinY(self.bottomView.frame) - top - 12));
 }
 
 - (void)didReceiveMemoryWarning {
@@ -161,13 +168,6 @@
     return cell;
 }
 
-- (CGSize)collectionView:(UICollectionView *)collectionView
-                  layout:(UICollectionViewLayout *)collectionViewLayout
-  sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
-    return CGSizeMake(RESIZE(316), RESIZE(440));
-}
-
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     [collectionView deselectItemAtIndexPath:indexPath animated:YES];
     if (collectionView == self.collectionView) {
@@ -227,13 +227,7 @@
                 ((CommentsCell*)cell).indexPath = indexPath;
                 ((CommentsCell*)cell).btn_delete.hidden = NO;
                 ((CommentsCell*)cell).onDeleteAction = ^(NSIndexPath *indexPath) {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"common_noti", @"알림")
-                                                                    message:NSLocalizedString(@"Comment_delete_message", @"청취소감을 삭제하시겠습니까?")
-                                                                   delegate:self
-                                                          cancelButtonTitle:NSLocalizedString(@"common_cancel", @"취소")
-                                                          otherButtonTitles:NSLocalizedString(@"common_delete", @"삭제"), nil];
-                    alert.tag = indexPath.row;
-                    [alert show];
+                    [self confirmDeleteCommentAtIndexPath:indexPath];
                 };
             } else {
                 ((CommentsCell*)cell).btn_delete.hidden = YES;
@@ -341,10 +335,26 @@
     self = [super init];
     if (self) {
         self.scrollDirection         = UICollectionViewScrollDirectionVertical;
-        self.minimumInteritemSpacing = 0;
-        self.minimumLineSpacing      = 0;
+        self.minimumInteritemSpacing = 16;
+        self.minimumLineSpacing      = 16;
+        self.estimatedItemSize        = CGSizeZero;
     }
     return self;
+}
+
+- (void)prepareLayout {
+    UICollectionView *collection = self.collectionView;
+    CGFloat available = collection.bounds.size.width - collection.adjustedContentInset.left - collection.adjustedContentInset.right - self.sectionInset.left - self.sectionInset.right;
+    if (available > self.minimumInteritemSpacing) {
+        // Round down so fractional scaling cannot push the second card to a new row.
+        CGFloat width = floor((available - self.minimumInteritemSpacing) / 2);
+        self.itemSize = CGSizeMake(width, width + 76);
+    }
+    [super prepareLayout];
+}
+
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
+    return !CGSizeEqualToSize(newBounds.size, self.collectionView.bounds.size) || [super shouldInvalidateLayoutForBoundsChange:newBounds];
 }
 
 @end
@@ -367,20 +377,26 @@ NSString * const  UIAODListCollectionViewCellIdentifier = @"UIAODListCollectionV
     return self;
 }
 
-- (void) setLayOut
-{
-    self.image = [[UIImageView alloc] initWithFrame:CGRectMake(RESIZE(11), RESIZE(31), RESIZE(294), RESIZE(294))];
-    [self addSubview:self.image];
-    
-    self.title = [[UILabel alloc] initWithFrame:CGRectMake(RESIZE(11), CGRectGetMaxY(self.image.frame) + RESIZE(12), RESIZE(294), RESIZE(42))];
-    self.title.textColor = UIColor.whiteColor;
-    self.title.font = [UIFont systemFontOfSize720:32];
-    [self addSubview:self.title];
-    
-    self.subTitle = [[UILabel alloc] initWithFrame:CGRectMake(RESIZE(11), CGRectGetMaxY(self.image.frame) + RESIZE(55), RESIZE(294), RESIZE(37))];
-    self.subTitle.textColor = UIColorFromRGB(0xB5B5B9);
-    self.subTitle.font = [UIFont systemFontOfSize720:27];
-    [self addSubview:self.subTitle];
+- (void)setLayOut {
+    if (self.image) return;
+    self.image = [UIImageView new];
+    self.image.contentMode = UIViewContentModeScaleAspectFill;
+    self.image.clipsToBounds = YES;
+    [self.contentView addSubview:self.image];
+    self.title = [UILabel new]; self.title.textColor = UIColor.whiteColor;
+    self.title.font = [UIFont systemFontOfSize:16]; self.title.numberOfLines = 2;
+    [self.contentView addSubview:self.title];
+    self.subTitle = [UILabel new]; self.subTitle.textColor = UIColorFromRGB(0xB5B5B9);
+    self.subTitle.font = [UIFont systemFontOfSize:13];
+    [self.contentView addSubview:self.subTitle];
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    CGFloat width = self.contentView.bounds.size.width;
+    self.image.frame = CGRectMake(0, 0, width, width);
+    self.title.frame = CGRectMake(0, width + 8, width, 40);
+    self.subTitle.frame = CGRectMake(0, width + 52, width, 20);
 }
 
 @end

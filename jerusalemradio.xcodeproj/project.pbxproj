@@ -12,6 +12,8 @@
 		1ABF51E6231265DB005890A5 /* menu_icon_notice@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1ABF51E3231265DA005890A5 /* menu_icon_notice@2x.png */; };
 		1ABF51EB23126986005890A5 /* UINoticeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ABF51EA23126986005890A5 /* UINoticeViewController.m */; };
 		1FA1B4EADF5F71DDE66B5C7D /* libPods-jerusalemradio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 924EA9FF646E8F5FEDB0EDD3 /* libPods-jerusalemradio.a */; };
+		57D77918B781CFE17353C370 /* JRBibleChapterListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C522E63CF987ABA8A0C78C /* JRBibleChapterListTests.m */; };
+		596B3C21F2A214F5C3E5B690 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CE7478A3477AE8192442CB48 /* SceneDelegate.m */; };
 		7C03B99A2F503B8500DAB3B1 /* icon_mic_aod.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C03B9992F503B8500DAB3B1 /* icon_mic_aod.png */; };
 		7C03B99D2F503B8C00DAB3B1 /* icon_mic_aod@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C03B99C2F503B8C00DAB3B1 /* icon_mic_aod@2x.png */; };
 		7C0DEABA218DB49100C2B108 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C0DEAB9218DB49000C2B108 /* Images.xcassets */; };
@@ -130,6 +132,7 @@
 		7CC1190C242CF38200B2D4E7 /* MNMToast.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC11903242CF38100B2D4E7 /* MNMToast.m */; };
 		7CC1190D242CF38200B2D4E7 /* MNMToastView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC11904242CF38100B2D4E7 /* MNMToastView.m */; };
 		7CC1190E242CF38200B2D4E7 /* MNMToastConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC11905242CF38100B2D4E7 /* MNMToastConstants.m */; };
+		9225CC5EE70048023B5416F5 /* JRBiblePlayback.m in Sources */ = {isa = PBXBuildFile; fileRef = E97E9340069B041E7AAD6DE8 /* JRBiblePlayback.m */; };
 		C60220F51EC6BC1A006D845C /* UIRegistMemberViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C60220F41EC6BC1A006D845C /* UIRegistMemberViewController.m */; };
 		C60220F81EC6C646006D845C /* UIView+Toast.m in Sources */ = {isa = PBXBuildFile; fileRef = C60220F71EC6C646006D845C /* UIView+Toast.m */; };
 		C60220FB1EC7037A006D845C /* UIPopupView.m in Sources */ = {isa = PBXBuildFile; fileRef = C60220FA1EC7037A006D845C /* UIPopupView.m */; };
@@ -158,7 +161,20 @@
 		C6AC62751ED7375300660F08 /* icon_comment_title@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C6AC62731ED7375300660F08 /* icon_comment_title@2x.png */; };
 		C6AC62781ED91AD400660F08 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AC62771ED91AD400660F08 /* SettingViewController.m */; };
 		C6F894C41EC4B25C00B4DF48 /* UILoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6F894C31EC4B25C00B4DF48 /* UILoginViewController.m */; };
+		CCBA0DD211380F141B4632D8 /* JRAODGridLayoutTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA8AA2A7C25329AD9086630 /* JRAODGridLayoutTests.m */; };
+		CDC3F47F3678D9932F6DCA80 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37A3BEF4D68ECBF7D545B668 /* LaunchScreen.storyboard */; };
+		F2EF3494A32F7D8EBEABE2E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 392DD2FB6A0EF7D89B0CEE7F /* Foundation.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8AE01A51CF71CDF1A4FE7394 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7CB682AA1E81655600DD4C50 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7CB682B11E81655600DD4C50;
+			remoteInfo = jerusalemradio;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		1A4FAE5322F6764F00A5151C /* DBStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DBStorage.h; path = jerusalemradio/util/DBStorage.h; sourceTree = SOURCE_ROOT; };
@@ -178,7 +194,13 @@
 		1AF02E22231299AF000256FE /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-PT"; path = "pt-PT.lproj/menu_icon_notice@2x.png"; sourceTree = "<group>"; };
 		1AF02E23231299B2000256FE /* es */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = es; path = "es.lproj/menu_icon_notice@2x.png"; sourceTree = "<group>"; };
 		1AF02E24231299B5000256FE /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "es-419"; path = "es-419.lproj/menu_icon_notice@2x.png"; sourceTree = "<group>"; };
+		2FF2AADC3267EA68A0506D7A /* JRBiblePlayback.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JRBiblePlayback.h; sourceTree = "<group>"; };
 		331F77459ED9248188E08274 /* Pods-jerusalemradio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-jerusalemradio.release.xcconfig"; path = "Pods/Target Support Files/Pods-jerusalemradio/Pods-jerusalemradio.release.xcconfig"; sourceTree = "<group>"; };
+		37A3BEF4D68ECBF7D545B668 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		392DD2FB6A0EF7D89B0CEE7F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		3E28BCF6AEC49AB9ADEC0452 /* SceneDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		71C522E63CF987ABA8A0C78C /* JRBibleChapterListTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JRBibleChapterListTests.m; sourceTree = "<group>"; };
+		789C011F3B7AD7FE7573FD4A /* jerusalemradioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = jerusalemradioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C03B9982F503B8500DAB3B1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Base; path = Base.lproj/icon_mic_aod.png; sourceTree = "<group>"; };
 		7C03B99B2F503B8C00DAB3B1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Base; path = "Base.lproj/icon_mic_aod@2x.png"; sourceTree = "<group>"; };
 		7C03B99E2F503B9200DAB3B1 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/icon_mic_aod@2x.png"; sourceTree = "<group>"; };
@@ -401,6 +423,7 @@
 		7CC11908242CF38100B2D4E7 /* MNMToast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MNMToast.h; sourceTree = "<group>"; };
 		7CC11909242CF38100B2D4E7 /* MNMToastValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MNMToastValue.h; sourceTree = "<group>"; };
 		7CC1190A242CF38100B2D4E7 /* Definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definitions.h; sourceTree = "<group>"; };
+		8761E51E4062EE1CC8C31F9E /* JRBiblePlaybackPolicy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JRBiblePlaybackPolicy.h; sourceTree = "<group>"; };
 		8EC3E04B1A7D6FC7AF5191CA /* Pods-jerusalemradio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-jerusalemradio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-jerusalemradio/Pods-jerusalemradio.debug.xcconfig"; sourceTree = "<group>"; };
 		924EA9FF646E8F5FEDB0EDD3 /* libPods-jerusalemradio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-jerusalemradio.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C602140F1EDC5D1400EB7ED7 /* jerusalemradio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = jerusalemradio.entitlements; sourceTree = "<group>"; };
@@ -445,6 +468,9 @@
 		C6AC62771ED91AD400660F08 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		C6F894C21EC4B25C00B4DF48 /* UILoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILoginViewController.h; sourceTree = "<group>"; };
 		C6F894C31EC4B25C00B4DF48 /* UILoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILoginViewController.m; sourceTree = "<group>"; };
+		CE7478A3477AE8192442CB48 /* SceneDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		DEA8AA2A7C25329AD9086630 /* JRAODGridLayoutTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JRAODGridLayoutTests.m; sourceTree = "<group>"; };
+		E97E9340069B041E7AAD6DE8 /* JRBiblePlayback.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JRBiblePlayback.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -459,6 +485,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8D402C0CFB1A04684E3D2EB1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F2EF3494A32F7D8EBEABE2E3 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -469,8 +503,18 @@
 				7C81C8181EBBE46D005FD066 /* AudioToolbox.framework */,
 				7C81C8161EBBE466005FD066 /* AVFoundation.framework */,
 				924EA9FF646E8F5FEDB0EDD3 /* libPods-jerusalemradio.a */,
+				808770B2D1DB6A211CA70BB7 /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		51EDEEDF7DC1BA97958D87FA /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				71C522E63CF987ABA8A0C78C /* JRBibleChapterListTests.m */,
+				DEA8AA2A7C25329AD9086630 /* JRAODGridLayoutTests.m */,
+			);
+			path = tests;
 			sourceTree = "<group>";
 		};
 		7C81C75B1EB782B2005FD066 /* UI */ = {
@@ -535,6 +579,9 @@
 				7C81C7671EB7FFFC005FD066 /* URLAddressManager.m */,
 				1A4FAE5322F6764F00A5151C /* DBStorage.h */,
 				1A4FAE5422F6764F00A5151C /* DBStorage.m */,
+				2FF2AADC3267EA68A0506D7A /* JRBiblePlayback.h */,
+				E97E9340069B041E7AAD6DE8 /* JRBiblePlayback.m */,
+				8761E51E4062EE1CC8C31F9E /* JRBiblePlaybackPolicy.h */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -546,6 +593,7 @@
 				7CB682B31E81655600DD4C50 /* Products */,
 				AA004316B1D9EA50A6D075FD /* Pods */,
 				004244201006EF41F1288D38 /* Frameworks */,
+				51EDEEDF7DC1BA97958D87FA /* tests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -553,6 +601,7 @@
 			isa = PBXGroup;
 			children = (
 				7CB682B21E81655600DD4C50 /* jerusalemradio.app */,
+				789C011F3B7AD7FE7573FD4A /* jerusalemradioTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -571,6 +620,9 @@
 				7C0DEAB9218DB49000C2B108 /* Images.xcassets */,
 				7CB682C61E81655600DD4C50 /* Info.plist */,
 				7CB682B51E81655600DD4C50 /* Supporting Files */,
+				3E28BCF6AEC49AB9ADEC0452 /* SceneDelegate.h */,
+				CE7478A3477AE8192442CB48 /* SceneDelegate.m */,
+				37A3BEF4D68ECBF7D545B668 /* LaunchScreen.storyboard */,
 			);
 			path = jerusalemradio;
 			sourceTree = "<group>";
@@ -720,6 +772,14 @@
 			path = MNMToast;
 			sourceTree = "<group>";
 		};
+		808770B2D1DB6A211CA70BB7 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				392DD2FB6A0EF7D89B0CEE7F /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
 		AA004316B1D9EA50A6D075FD /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -732,6 +792,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		30822647876FB98C4BA44044 /* jerusalemradioTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 970561267FCF8ED1CEA02F47 /* Build configuration list for PBXNativeTarget "jerusalemradioTests" */;
+			buildPhases = (
+				840B22AA2A7059FC18461C91 /* Sources */,
+				8D402C0CFB1A04684E3D2EB1 /* Frameworks */,
+				8B091E9DA32EE84BF3ED90BE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B351D288BB7C099CA091E4CF /* PBXTargetDependency */,
+			);
+			name = jerusalemradioTests;
+			productName = jerusalemradioTests;
+			productReference = 789C011F3B7AD7FE7573FD4A /* jerusalemradioTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		7CB682B11E81655600DD4C50 /* jerusalemradio */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7CB682C91E81655600DD4C50 /* Build configuration list for PBXNativeTarget "jerusalemradio" */;
@@ -740,6 +818,7 @@
 				7CB682AE1E81655600DD4C50 /* Sources */,
 				7CB682AF1E81655600DD4C50 /* Frameworks */,
 				7CB682B01E81655600DD4C50 /* Resources */,
+				8967A0B909D8BEABC5613765 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -759,6 +838,10 @@
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "JooYoung Kim";
 				TargetAttributes = {
+					30822647876FB98C4BA44044 = {
+						DevelopmentTeam = E9X7ZUYDPK;
+						ProvisioningStyle = Automatic;
+					};
 					7CB682B11E81655600DD4C50 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = E9X7ZUYDPK;
@@ -793,6 +876,7 @@
 			projectRoot = "";
 			targets = (
 				7CB682B11E81655600DD4C50 /* jerusalemradio */,
+				30822647876FB98C4BA44044 /* jerusalemradioTests */,
 			);
 		};
 /* End PBXProject section */
@@ -918,6 +1002,14 @@
 				C61419301EE06152006FBBD8 /* bar_btn_close_press@2x.png in Resources */,
 				7C81C7BC1EB95C8B005FD066 /* icon_close.png in Resources */,
 				C614193A1EE06153006FBBD8 /* bar_btn_pre@2x.png in Resources */,
+				CDC3F47F3678D9932F6DCA80 /* LaunchScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8B091E9DA32EE84BF3ED90BE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -940,6 +1032,42 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8967A0B909D8BEABC5613765 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-jerusalemradio/Pods-jerusalemradio-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FMDB/FMDB_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCore/FirebaseCore_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreInternal/FirebaseCoreInternal_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseInstallations/FirebaseInstallations_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMessaging/FirebaseMessaging_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransport/GoogleDataTransport_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Reachability/Reachability_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb_Privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FMDB_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCore_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreInternal_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseInstallations_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseMessaging_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleDataTransport_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleUtilities_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Reachability_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/nanopb_Privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-jerusalemradio/Pods-jerusalemradio-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -980,10 +1108,30 @@
 				7C81C7FE1EB96442005FD066 /* CommonUtil.m in Sources */,
 				7CC1190D242CF38200B2D4E7 /* MNMToastView.m in Sources */,
 				7CC1190E242CF38200B2D4E7 /* MNMToastConstants.m in Sources */,
+				9225CC5EE70048023B5416F5 /* JRBiblePlayback.m in Sources */,
+				596B3C21F2A214F5C3E5B690 /* SceneDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		840B22AA2A7059FC18461C91 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57D77918B781CFE17353C370 /* JRBibleChapterListTests.m in Sources */,
+				CCBA0DD211380F141B4632D8 /* JRAODGridLayoutTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B351D288BB7C099CA091E4CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = jerusalemradio;
+			target = 7CB682B11E81655600DD4C50 /* jerusalemradio */;
+			targetProxy = 8AE01A51CF71CDF1A4FE7394 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		1ABF51E1231265DA005890A5 /* menu_icon_notice.png */ = {
@@ -1252,6 +1400,42 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		51765C34033AB189A332DD30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = E9X7ZUYDPK;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/jerusalemradio",
+					"$(SRCROOT)/jerusalemradio/UI",
+					"$(SRCROOT)/jerusalemradio/Util",
+					"$(SRCROOT)/Pods/Headers/Public",
+					"$(SRCROOT)/Pods/Headers/Public/AudioStreamPlayer",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.goodnews.jerusalemradio2.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/jerusalemradio.app/jerusalemradio";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		7CB682C71E81655600DD4C50 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1347,7 +1531,6 @@
 			baseConfigurationReference = 8EC3E04B1A7D6FC7AF5191CA /* Pods-jerusalemradio.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = jerusalemradio/jerusalemradio.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1355,9 +1538,9 @@
 				DEVELOPMENT_TEAM = E9X7ZUYDPK;
 				GCC_PREFIX_HEADER = jerusalemradio/jerusalemradio_prefix.pch;
 				INFOPLIST_FILE = jerusalemradio/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.1.3;
+				MARKETING_VERSION = 3.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.goodnews.jerusalemradio2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1370,7 +1553,6 @@
 			baseConfigurationReference = 331F77459ED9248188E08274 /* Pods-jerusalemradio.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = jerusalemradio/jerusalemradio.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1378,15 +1560,50 @@
 				DEVELOPMENT_TEAM = E9X7ZUYDPK;
 				GCC_PREFIX_HEADER = jerusalemradio/jerusalemradio_prefix.pch;
 				INFOPLIST_FILE = jerusalemradio/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.1.3;
+				MARKETING_VERSION = 3.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.goodnews.jerusalemradio2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
+		};
+		E9AAE77AE8015A3D26507806 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = E9X7ZUYDPK;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/jerusalemradio",
+					"$(SRCROOT)/jerusalemradio/UI",
+					"$(SRCROOT)/jerusalemradio/Util",
+					"$(SRCROOT)/Pods/Headers/Public",
+					"$(SRCROOT)/Pods/Headers/Public/AudioStreamPlayer",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.goodnews.jerusalemradio2.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/jerusalemradio.app/jerusalemradio";
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1405,6 +1622,15 @@
 			buildConfigurations = (
 				7CB682CA1E81655600DD4C50 /* Debug */,
 				7CB682CB1E81655600DD4C50 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		970561267FCF8ED1CEA02F47 /* Build configuration list for PBXNativeTarget "jerusalemradioTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				51765C34033AB189A332DD30 /* Release */,
+				E9AAE77AE8015A3D26507806 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

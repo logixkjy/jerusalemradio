@@ -168,13 +168,7 @@
                 ((CommentsCell*)cell).indexPath = indexPath;
                 ((CommentsCell*)cell).btn_delete.hidden = NO;
                 ((CommentsCell*)cell).onDeleteAction = ^(NSIndexPath *indexPath) {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"common_noti", @"알림")
-                                                                    message:NSLocalizedString(@"Comment_delete_message", @"청취소감을 삭제하시겠습니까?")
-                                                                   delegate:self
-                                                          cancelButtonTitle:NSLocalizedString(@"common_cancel", @"취소")
-                                                          otherButtonTitles:NSLocalizedString(@"common_delete", @"삭제"), nil];
-                    alert.tag = indexPath.row;
-                    [alert show];
+                    [self confirmDeleteCommentAtIndexPath:indexPath];
                 };
             } else {
                 ((CommentsCell*)cell).btn_delete.hidden = YES;
@@ -216,16 +210,7 @@
 }
 
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == 1) {
-        [GetURLAddressManager deleteComments:[NSString stringWithFormat:[URLAddressManager getURL:[URLAddressManager getLocal] type:COMMENTSDELETE],self.commentsList[alertView.tag][@"PR_CO_ID"]] mbID:GetCommonData.MB_ID CompletionHandler:^(NSDictionary *data, NSError *error) {
-            if ([data[@"status"] intValue] == 200) {
-                [self getComments];
-            }
-        }];
-    }
-}
+
 
 
 - (void)showNoticeLiveClose {

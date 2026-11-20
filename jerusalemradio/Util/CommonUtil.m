@@ -8,15 +8,37 @@
 
 #import "CommonUtil.h"
 #import <Reachability.h>
-#import <CommonCrypto/CommonDigest.h>
 #import <SBJson4.h>
 
 @implementation CommonUtil
 
++ (UIWindow *)activeWindow {
+    UIWindow *window = ((AppDelegate *)UIApplication.sharedApplication.delegate).window;
+    if (window) return window;
+    for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+        if (![scene isKindOfClass:UIWindowScene.class]) continue;
+        UIWindowScene *windowScene = (UIWindowScene *)scene;
+        if (scene.activationState != UISceneActivationStateForegroundActive) continue;
+        for (UIWindow *candidate in windowScene.windows) if (candidate.isKeyWindow) return candidate;
+    }
+    return nil;
+}
+
++ (void)showMessage:(NSString *)message title:(NSString *)title from:(UIViewController *)controller completion:(void (^)(void))completion {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"common_ok", @"확인") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            if (completion) completion();
+        }]];
+        [controller presentViewController:alert animated:YES completion:nil];
+    });
+}
+
+
 + (CGFloat)getSafaAreaTop
 {
     if (@available(iOS 11.0, *)) {
-        UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+        UIWindow *window = [self activeWindow];
         CGFloat top = window.safeAreaInsets.top;
         return top;
     }
@@ -26,7 +48,7 @@
 + (CGFloat)getSafaAreaBottom
 {
     if (@available(iOS 11.0, *)) {
-        UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+        UIWindow *window = [self activeWindow];
         CGFloat bottom = window.safeAreaInsets.bottom;
         return bottom;
     }
@@ -41,7 +63,7 @@
 
 + (BOOL)isiPhoneXScreen {
     if (@available(iOS 11.0, *)) {
-        UIEdgeInsets edgeInsets = [UIApplication sharedApplication].windows[0].safeAreaInsets;
+        UIEdgeInsets edgeInsets = [self activeWindow].safeAreaInsets;
         if (edgeInsets.top != 0 && edgeInsets.bottom != 0) {
             return YES;
         }
@@ -84,33 +106,6 @@
     return cacheFolder;
 }
 
-// calculates the MD5 hash of a key
-+ (NSString *)md5StringForString:(NSString *)string {
-    const char *str = [string UTF8String];
-    unsigned char r[CC_MD5_DIGEST_LENGTH];
-    CC_MD5(str, (uint32_t)strlen(str), r);
-    return [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-            r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]];
-}
-
-+ (id)connetcionNetworkWithURL:(NSURL*)url {
-    NSError             *error  = nil;
-    NSMutableURLRequest *request = [NSMutableURLRequest
-                                    requestWithURL:url
-                                    cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                    timeoutInterval:60.0f];
-    
-    NSData *dataBuffer = [NSURLConnection sendSynchronousRequest:request returningResponse: nil error: &error];
-    
-    if (error) {
-        return error;
-    }else {
-        return [CommonUtil jsonParserWithData:dataBuffer];
-    }
-    
-    return nil;
-}
-
 // json데이터 파싱
 +(id)jsonParser:(NSString*)str {
     __block id object = nil;
@@ -135,6 +130,7 @@
 
 // json데이터 파싱
 +(id)jsonParserWithData:(NSData*)data {
+    if (!data.length) return nil;
     __block id object = nil;
     SBJson4ValueBlock block = ^(id obj, BOOL *stop) {
         object = obj;
@@ -245,7 +241,7 @@
 	NSUserDefaults *defaults;
 	defaults = NUD;
     
-	return [defaults integerForKey:strKey];
+	return (int)[defaults integerForKey:strKey];
 }
 
 + (void) writeObjectToDefault:(id)idValue KEY:(NSString *)strKey
@@ -316,7 +312,7 @@
 }
 
 + (void)globalResignFirstResponder {
-    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    UIWindow * window = [CommonUtil activeWindow];
     for (UIView * view in [window subviews]){
         [self globalResignFirstResponderView:view];
     }
@@ -370,25 +366,33 @@ static char overviewKey;
     }
 }
 
-- (void)centerVerticallyWithPadding:(float)padding
-{
-    CGSize imageSize = self.imageView.frame.size;
-    CGSize titleSize = [self.titleLabel.text sizeWithAttributes: @{NSFontAttributeName:self.titleLabel.font}];
-    
-    CGFloat totalHeight = (imageSize.height + titleSize.height + padding);
-    
-    self.imageEdgeInsets = UIEdgeInsetsMake(- (totalHeight - imageSize.height),
-                                            0.0f,
-                                            0.0f,
-                                            -titleSize.width);
-    
-    self.titleEdgeInsets = UIEdgeInsetsMake(0.0f,
-                                            - imageSize.width,
-                                            - (totalHeight - titleSize.height),
-                                            0.0f);
-    
+- (UIButtonConfiguration *)contentConfiguration {
+    UIButtonConfiguration *configuration = self.configuration ?: UIButtonConfiguration.plainButtonConfiguration;
+    configuration.image = self.currentImage;
+    configuration.title = self.currentTitle;
+    configuration.baseForegroundColor = self.currentTitleColor;
+    UIFont *font = self.titleLabel.font;
+    configuration.titleTextAttributesTransformer = ^NSDictionary<NSAttributedStringKey,id> *(NSDictionary<NSAttributedStringKey,id> *incoming) {
+        NSMutableDictionary *attributes = incoming.mutableCopy;
+        if (font) attributes[NSFontAttributeName] = font;
+        return attributes;
+    };
+    return configuration;
 }
 
+- (void)applyContentInsets:(UIEdgeInsets)insets imagePadding:(CGFloat)padding {
+    UIButtonConfiguration *configuration = [self contentConfiguration];
+    configuration.contentInsets = NSDirectionalEdgeInsetsMake(insets.top, insets.left, insets.bottom, insets.right);
+    configuration.imagePadding = padding;
+    self.configuration = configuration;
+}
+
+- (void)centerVerticallyWithPadding:(float)padding {
+    UIButtonConfiguration *configuration = [self contentConfiguration];
+    configuration.imagePlacement = NSDirectionalRectEdgeTop;
+    configuration.imagePadding = padding;
+    self.configuration = configuration;
+}
 
 - (void)centerVertically
 {
@@ -412,7 +416,7 @@ static char overviewKey;
 
 - (NSString *)URLDecode
 {
-    return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return self.stringByRemovingPercentEncoding ?: self;
 }
 
 - (NSString *)URLEncode
@@ -422,12 +426,9 @@ static char overviewKey;
 
 - (NSString *)urlEncodeUsingEncoding:(NSStringEncoding)encoding
 {
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
-                                                                                 NULL,
-                                                                                 (__bridge CFStringRef)self,
-                                                                                 NULL,
-                                                                                 (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% ",
-                                                                                 CFStringConvertNSStringEncodingToEncoding(encoding)));
+    // Existing callers encode UTF-8 URL parameter values.
+    NSCharacterSet *allowed = [NSCharacterSet characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"];
+    return [self stringByAddingPercentEncodingWithAllowedCharacters:allowed] ?: self;
 }
 
 @end

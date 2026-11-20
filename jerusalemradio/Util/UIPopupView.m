@@ -151,10 +151,8 @@
 
 - (void)show
 {
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    if (window == nil) {
-        window = [[UIApplication sharedApplication].windows objectAtIndex:0];
-    }
+    UIWindow *window = [CommonUtil activeWindow];
+    if (!window) return;
     
     self.frame = window.bounds;
     self.backgroundColor = [UIColor colorWithWhite:0. alpha:.8];
@@ -224,7 +222,7 @@
     }
     
     if (self.popupType == UIPopupView_TYPE_ACTIVITY_INDICATOR) {
-        UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
         activityIndicatorView.color = UIColorFromRGB(0x808081);
         activityIndicatorView.frame = CGRectMake((CGRectGetWidth(backgroundView.frame)-CGRectGetWidth(activityIndicatorView.frame))/2.,
                                                  maxY + 25.,

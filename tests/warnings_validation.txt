@@ -1,0 +1,36 @@
+컴파일 경고 정리 검증 (2026-11-11)
+
+앱 코드 / 설정
+- 기존 실기기 앱 빌드 로그: 경고 420건 (공통 헤더의 중복 진단 포함).
+- CommonUtil.h의 null 허용 계약을 명시하고 미사용 MD5/동기 통신 코드를 제거.
+- UIWebView를 WKWebView로 교체. 스토리보드에 UIWebView 객체가 남지 않음.
+- NSURLConnection을 NSURLSession으로 교체. 다음/이전 곡 응답은 현재 회차가
+  바뀌었으면 무시하며, 네트워크 요청이 메인 스레드를 막지 않음.
+- UIAlertView/구형 UIActionSheet와 알림 권한 API를 최신 API로 변경.
+- Scene의 window 접근, 블록 애니메이션, UIButtonConfiguration,
+  현대식 미디어 아트워크/로딩 표시/런치 화면 설정으로 변경.
+- 미구현 메서드 선언, 불필요한 UITableViewDataSource 준수 선언 제거.
+- 앱 타깃의 컴파일 경고 검사는 유지.
+
+외부 라이브러리 진단 정책 (수정 완료와 구분)
+전체 클린 빌드에서 앱 경고를 제거한 후에도 Pods 내부 경고 220건을 확인함.
+AudioStreamPlayer 169, AFNetworking 25, Reachability 14,
+GoogleUtilities 6, GoogleDataTransport 4, 빈 아카이브 객체 안내 2건.
+이 외부 코드의 deprecated/retain/prototype 진단을 모두 수정한 것은 아님.
+Podfile의 inhibit_all_warnings!는 Pods의 진단 출력만 억제한다.
+앱 코드의 오류/경고와 라이브러리의 컴파일 오류는 계속 표시된다.
+빈 객체의 무해한 libtool 안내는 -no_warning_for_no_symbols로 별도 분리함.
+Podfile 경고 정책은 pod install/update 후에도 적용된다.
+
+검증
+- 실기기 서명 빌드: 성공, 최종 경고 0건.
+- 시뮬레이터 빌드: 성공.
+- iPhone 16 Plus / iOS 27.0.1: 재설치와 시작 화면 표시, 프로세스 유지 확인.
+- 성경낭독 딥링크 진입 확인.
+- 재생 순서/반복/권 종료 취침 정책 자동 테스트 통과.
+- 로그인/가입/실제 댓글 삭제/푸시 전송은 수행하지 않았음.
+
+재현 명령
+pod install
+xcodebuild -workspace jerusalemradio.xcworkspace -scheme jerusalemradio -sdk iphoneos -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath /tmp/jerusalem-warning-clean build
+xcodebuild -workspace jerusalemradio.xcworkspace -scheme jerusalemradio -sdk iphonesimulator -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/jerusalem-pod-fix CODE_SIGNING_ALLOWED=NO build

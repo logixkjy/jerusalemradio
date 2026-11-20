@@ -14,8 +14,9 @@
 #import <FirebaseMessaging/FIRMessaging.h>
 
 #import "DBStorage.h"
+#import <UserNotifications/UserNotifications.h>
 
-@interface AppDelegate ()
+@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
 
 @end
 
@@ -27,8 +28,16 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
-    // attempt to extract a token from the url
+    return [self handleOpenURL:url];
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    return [self handleOpenURL:url];
+}
+
+- (BOOL)handleOpenURL:(NSURL *)url {
     NSDictionary *callbackDic = [self URLSchemesCallbackParsing:[url absoluteString]];
+    if (!callbackDic) return NO;
     
     NSInteger count = ((UINavigationController*)self.window.rootViewController).viewControllers.count;
     if (count > 1) {
@@ -147,13 +156,12 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
         }
     }
     
-    UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
-                                                    UIUserNotificationTypeBadge |
-                                                    UIUserNotificationTypeSound);
-    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes
-                                                                             categories:nil];
-    [application registerUserNotificationSettings:settings];
-    [application registerForRemoteNotifications];
+    UNUserNotificationCenter *notificationCenter = UNUserNotificationCenter.currentNotificationCenter;
+    notificationCenter.delegate = self;
+    [FIRMessaging messaging].delegate = self;
+    [notificationCenter requestAuthorizationWithOptions:UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound completionHandler:^(BOOL granted, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{ [application registerForRemoteNotifications]; });
+    }];
     // [END register_for_notifications]
     // [START configure_firebase]
     //    [FIRApp configure];
@@ -168,10 +176,25 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     return YES;
 }
 
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+    [self handleRemoteNotification:response.notification.request.content.userInfo];
+    completionHandler();
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+    [self handleRemoteNotification:notification.request.content.userInfo];
+    completionHandler(UNNotificationPresentationOptionNone);
+}
+
 #pragma mark - APNS.
 
 // [START receive_message]
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    [self handleRemoteNotification:userInfo];
+}
+
+- (void)handleRemoteNotification:(NSDictionary *)userInfo {
+    UIApplication *application = UIApplication.sharedApplication;
     // If you are receiving a notification message while your app is in the background,
     // this callback will not be fired till the user taps on the notification launching the application.
     // TODO: Handle data of notification
@@ -288,15 +311,12 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setHTTPMethod:@"POST"];
     
-    NSError *error = nil;
-    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
-    NSLog(@"Response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-    NSLog(@"error: %@",error);
-    
-    if (error == nil) {
-        [CommonUtil writeBoolToDefault:YES KEY:@"isRegisterDevice"];
-    }
-    
+    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (!error && [(NSHTTPURLResponse *)response statusCode] >= 200 && [(NSHTTPURLResponse *)response statusCode] < 300) {
+            [CommonUtil writeBoolToDefault:YES KEY:@"isRegisterDevice"];
+        }
+    }] resume];
+
     //    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     //
     //    [manager POST:@"http://neo.goodnews.or.kr/adm/notification/registerDevice" parameters:param progress:nil
@@ -309,8 +329,7 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 -(void)resetBadge {
     //Badge 개수 초기화
-    NSLog(@"badgeCount => %ld",(long)[UIApplication sharedApplication].applicationIconBadgeNumber);
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    [UNUserNotificationCenter.currentNotificationCenter setBadgeCount:0 withCompletionHandler:nil];
 }
 
 - (void) showModalView:(id)target{

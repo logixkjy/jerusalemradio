@@ -18,11 +18,13 @@
 
 #import "DBStorage.h"
 #import "STKAudioPlayer.h"
+#import "JRBiblePlayback.h"
+#include <math.h>
 
 @import AVFoundation;
 @import AudioToolbox;
 
-@interface UIBaseViewController () <UITextViewDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, STKAudioPlayerDelegate> {
+@interface UIBaseViewController () <UITextViewDelegate, UIGestureRecognizerDelegate, STKAudioPlayerDelegate> {
     
     IBOutlet UIView *backView;
     NSDictionary *metadata;
@@ -34,9 +36,26 @@
     BOOL isPlay;
 }
 
+@property (nonatomic) BOOL loadingTrack;
+@property (nonatomic, weak) STKAudioPlayer *startingAODPlayer;
+@property (nonatomic, weak) STKAudioPlayer *failedAODPlayer;
 @end
 
 @implementation UIBaseViewController
+
+- (void)confirmDeleteCommentAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row >= self.commentsList.count) return;
+    NSString *commentID = self.commentsList[indexPath.row][@"PR_CO_ID"];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"common_noti", @"알림") message:NSLocalizedString(@"Comment_delete_message", @"청취소감을 삭제하시겠습니까?") preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"common_cancel", @"취소") style:UIAlertActionStyleCancel handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"common_delete", @"삭제") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [GetURLAddressManager deleteComments:[NSString stringWithFormat:[URLAddressManager getURL:[URLAddressManager getLocal] type:COMMENTSDELETE], commentID] mbID:GetCommonData.MB_ID CompletionHandler:^(NSDictionary *data, NSError *error) {
+            if ([data[@"status"] intValue] == 200) dispatch_async(dispatch_get_main_queue(), ^{ [self getComments]; });
+        }];
+    }]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -65,6 +84,7 @@
     [self.sl_progress setMinimumTrackTintColor:UIColorFromRGB(0xF5AF14)];
     [self.sl_progress setMaximumTrackTintColor:UIColorFromRGB(0x4d4d58)];
     [self.sl_progress setValue:0];
+    self.sl_progress.continuous = NO;
     [self.sl_progress addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
     
     [self.vi_progress addSubview:self.sl_progress];
@@ -204,8 +224,7 @@
         [self.btn_live setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
         [self.btn_live.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
         [self.btn_live setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
-        [self.btn_live setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
-        [self.btn_live setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
+        [self.btn_live applyContentInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0) imagePadding:RESIZE(22)];
         img_line = [[UIImageView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.btn_live.frame) - RESIZE(2), RESIZE(332), RESIZE(2))];
         img_line.backgroundColor = UIColorFromRGB(0x888888);
         [self.menuView addSubview:img_line];
@@ -221,8 +240,7 @@
     [self.btn_aod setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
     [self.btn_aod.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
     [self.btn_aod setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
-    [self.btn_aod setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
-    [self.btn_aod setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
+    [self.btn_aod applyContentInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0) imagePadding:RESIZE(22)];
     img_line = [[UIImageView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.btn_aod.frame) - RESIZE(2), RESIZE(332), RESIZE(2))];
     img_line.backgroundColor = UIColorFromRGB(0x888888);
     [self.menuView addSubview:img_line];
@@ -234,8 +252,7 @@
     [self.btn_schedule setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
     [self.btn_schedule.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
     [self.btn_schedule setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
-    [self.btn_schedule setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
-    [self.btn_schedule setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
+    [self.btn_schedule applyContentInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0) imagePadding:RESIZE(22)];
     img_line = [[UIImageView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.btn_schedule.frame) - RESIZE(2), RESIZE(332), RESIZE(2))];
     img_line.backgroundColor = UIColorFromRGB(0x888888);
     [self.menuView addSubview:img_line];
@@ -252,8 +269,7 @@
         [self.btn_notice setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
         [self.btn_notice.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
         [self.btn_notice setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
-        [self.btn_notice setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
-        [self.btn_notice setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
+        [self.btn_notice applyContentInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0) imagePadding:RESIZE(22)];
         img_line = [[UIImageView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.btn_notice.frame) - RESIZE(2), RESIZE(332), RESIZE(2))];
         img_line.backgroundColor = UIColorFromRGB(0x888888);
         [self.menuView addSubview:img_line];
@@ -266,8 +282,7 @@
     [self.btn_setting setTitleColor:UIColorFromRGB(0x292B35) forState:UIControlStateNormal];
     [self.btn_setting.titleLabel setFont:[UIFont boldSystemFontOfSize720:24]];
     [self.btn_setting setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
-    [self.btn_setting setContentEdgeInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0)];
-    [self.btn_setting setTitleEdgeInsets:UIEdgeInsetsMake(0, RESIZE(22), 0, 0)];
+    [self.btn_setting applyContentInsets:UIEdgeInsetsMake(0, RESIZE(55), 0, 0) imagePadding:RESIZE(22)];
     img_line = [[UIImageView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.btn_setting.frame) - RESIZE(2), RESIZE(332), RESIZE(2))];
     img_line.backgroundColor = UIColorFromRGB(0x888888);
     [self.menuView addSubview:img_line];
@@ -625,10 +640,13 @@
 /// Raised when the state of the player has changed
 -(void) audioPlayer:(STKAudioPlayer*)audioPlayer stateChanged:(STKAudioPlayerState)state previousState:(STKAudioPlayerState)previousState
 {
+    if (audioPlayer != self.mainDelegate.avAudioPlayer) return;
 //    if (self.mainDelegate.avAudioPlayer.state != STKAudioPlayerStatePlaying) {
 //        [self.mainDelegate.avAudioPlayer resume];
 //    } else
     if (self.mainDelegate.avAudioPlayer.state == STKAudioPlayerStatePlaying) {
+        self.startingAODPlayer = nil;
+        self.failedAODPlayer = nil;
         [self.mainDelegate stopAnimatedLodingView];
 
         if ([GetCommonData.audio_mode isEqualToString:@"AOD"]) {
@@ -654,12 +672,30 @@
 /// Raised when an item has finished playing
 -(void) audioPlayer:(STKAudioPlayer*)audioPlayer didFinishPlayingQueueItemId:(NSObject*)queueItemId withReason:(STKAudioPlayerStopReason)stopReason andProgress:(double)progress andDuration:(double)duration
 {
-    
+    if (stopReason != STKAudioPlayerStopReasonEof) return;
+    // Let the callback return before replacing the player.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (audioPlayer == self.mainDelegate.avAudioPlayer) {
+            [self moveWithinPlayingAODGroup:1 showBoundary:NO];
+        }
+    });
 }
 /// Raised when an unexpected and possibly unrecoverable error has occured (usually best to recreate the STKAudioPlauyer)
 -(void) audioPlayer:(STKAudioPlayer*)audioPlayer unexpectedError:(STKAudioPlayerErrorCode)errorCode
 {
-    
+    [self finishFailedAODPlayback:audioPlayer];
+}
+
+- (void)finishFailedAODPlayback:(STKAudioPlayer *)player {
+    if (player != self.mainDelegate.avAudioPlayer ||
+        ![GetCommonData.audio_mode isEqualToString:@"AOD"] ||
+        player == self.failedAODPlayer) return;
+
+    self.startingAODPlayer = nil;
+    self.failedAODPlayer = player;
+    self.btn_play.selected = NO;
+    [self.mainDelegate stopAnimatedLodingView];
+    [self.view makeToast:NSLocalizedString(@"재생을 시작하지 못했습니다. 다시 시도해 주세요.", nil)];
 }
 //@optional
 /// Optionally implemented to get logging information from the STKAudioPlayer (used internally for debugging)
@@ -719,24 +755,17 @@
 }
 
 - (void)sliderValueChanged:(UISlider*)sender {
-    if (_btn_play.selected) {
-        [self.mainDelegate.avAudioPlayer pause];
-    }
-    
-    CGFloat interval = self.mainDelegate.avAudioPlayer.duration * sender.value;
-    NSLog(@"interval [%@]  maximumValue [%@]", @(interval), @(self.sl_progress.maximumValue));
-    [self.mainDelegate.avAudioPlayer seekToTime:sender.value];
+    STKAudioPlayer *player = self.mainDelegate.avAudioPlayer;
+    if (![GetCommonData.audio_mode isEqualToString:@"AOD"] ||
+        (player.state != STKAudioPlayerStatePlaying && player.state != STKAudioPlayerStatePaused)) return;
 
-    self.lbl_playback_time.text = [NSString stringWithFormat:@"%@",[self convertIntToTime:(int)self.mainDelegate.avAudioPlayer.progress]];
-
-    self.lbl_duration.text = [NSString stringWithFormat:@"-%@",[self convertIntToTime:abs((int)(self.mainDelegate.avAudioPlayer.progress-self.mainDelegate.avAudioPlayer.duration))]];
-
-    if (_btn_play.selected) {
-        [self.mainDelegate.avAudioPlayer resume];
-    }
-    if ([GetCommonData.audio_mode isEqualToString:@"AOD"]) {
-        [CommonUtil writeIntToDefault:self.mainDelegate.avAudioPlayer.progress KEY:GetCommonData.CT_NO];
-    }
+    double duration = player.duration;
+    if (!isfinite(duration) || duration <= 0 || !isfinite(sender.value)) return;
+    double position = MIN(MAX(0, sender.value), MAX(0, duration - 1));
+    [player seekToTime:position];
+    sender.value = position;
+    self.lbl_playback_time.text = [self convertIntToTime:(int)position];
+    self.lbl_duration.text = [@"-" stringByAppendingString:[self convertIntToTime:(int)(duration - position)]];
 }
 
 - (void)rightSwipeHandle:(UISwipeGestureRecognizer*)gestureRecognizer {
@@ -767,10 +796,9 @@
 - (IBAction)viewMenu
 {
     backView.hidden = NO;
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5];
+    [UIView animateWithDuration:0.5 animations:^{
     self.menuView.frame = CGRectMake(0, 0, RESIZE(332), MAIN_SIZE().height);
-    [UIView commitAnimations];
+    }];
 }
 
 - (IBAction)closeMenu
@@ -778,10 +806,9 @@
     [UIViewController globalResignFirstResponder];
     
     backView.hidden = YES;
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5];
+    [UIView animateWithDuration:0.5 animations:^{
     self.menuView.frame = CGRectMake(-RESIZE(332), 0, RESIZE(332), MAIN_SIZE().height);
-    [UIView commitAnimations];
+    }];
 }
 
 - (IBAction)viewComments
@@ -791,20 +818,18 @@
         return;
     }
     backView.hidden = NO;
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5];
+    [UIView animateWithDuration:0.5 animations:^{
     self.commentsView.frame = CGRectMake(RESIZE(96), isiPhoneXScreen() ? 44 : 20, MAIN_SIZE().width - RESIZE(96), MAIN_SIZE().height - (isiPhoneXScreen() ? 44 : 20));
-    [UIView commitAnimations];
+    }];
 }
 
 - (IBAction)closeComments
 {
     [UIViewController globalResignFirstResponder];
     backView.hidden = YES;
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5];
+    [UIView animateWithDuration:0.5 animations:^{
     self.commentsView.frame = CGRectMake(MAIN_SIZE().width, isiPhoneXScreen() ? 44 : 20, MAIN_SIZE().width - RESIZE(96), MAIN_SIZE().height - (isiPhoneXScreen() ? 44 : 20));
-    [UIView commitAnimations];
+    }];
     
 }
 
@@ -869,52 +894,85 @@
     [self.navigationController pushViewController:noticeView animated:YES];
 }
 
-- (IBAction)nextTrack
-{
-    NSString *URL = [NSString stringWithFormat:[URLAddressManager getURL:[URLAddressManager getLocal] type:PLAYNEXT] ,GetCommonData.aodData[@"PR_ID"], GetCommonData.CT_NO];
-    NSLog(@"%s %@", __FUNCTION__, URL);
-    NSURLResponse *response = nil;
-    NSError *error = nil;
-    NSData *data = [NSURLConnection sendSynchronousRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:URL]] returningResponse:&response error:&error];
-    
-    if ([((NSDictionary*)[CommonUtil jsonParserWithData:data])[@"CONTENTS"][@"status_message"] isEqualToString:@"No Data"] ||
-        [((NSDictionary*)[CommonUtil jsonParserWithData:data])[@"CONTENTS"][@"status"] intValue] == 400) {
-        [self.view makeToast:NSLocalizedString(@"Player_next_empty", @"다음곡이 없습니다.")];
-        return;
-    }
-    NSDictionary *dic_data = ((NSDictionary*)[CommonUtil jsonParserWithData:data])[@"CONTENTS"][@"data"][0];
-    GetCommonData.PR_ID = dic_data[@"PR_ID"];
-    GetCommonData.aodData = dic_data;
-    self.isPlaying = NO;
-    [self.mainDelegate.avAudioPlayer stop];
-    [self.timer invalidate];
-    [self playAOD];
+- (IBAction)nextTrack {
+    if ([JRBiblePlayback shared].active) { [[JRBiblePlayback shared] move:1 automatic:NO]; return; }
+    [self moveAODTrackForward:YES];
 }
 
-- (IBAction)prevTrack
-{
-    NSString *URL = [NSString stringWithFormat:[URLAddressManager getURL:[URLAddressManager getLocal] type:PLAYPREV] ,GetCommonData.aodData[@"PR_ID"], GetCommonData.CT_NO];
-    NSLog(@"%s %@", __FUNCTION__, URL);
-    NSURLResponse *response = nil;
-    NSError *error = nil;
-    NSData *data = [NSURLConnection sendSynchronousRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:URL]] returningResponse:&response error:&error];
-    
-    if ([((NSDictionary*)[CommonUtil jsonParserWithData:data])[@"CONTENTS"][@"status_message"] isEqualToString:@"No Data"] ||
-        [((NSDictionary*)[CommonUtil jsonParserWithData:data])[@"CONTENTS"][@"status"] intValue] == 400) {
-        [self.view makeToast:NSLocalizedString(@"Player_prev_empty", @"이전곡이 없습니다.")];
-        return;
+- (IBAction)prevTrack {
+    if ([JRBiblePlayback shared].active) { [[JRBiblePlayback shared] move:-1 automatic:NO]; return; }
+    [self moveAODTrackForward:NO];
+}
+
++ (BOOL)usesAODGroupsForProgramID:(NSString *)programID {
+    return [@[@"002015", @"002013", @"003013", @"003009"] containsObject:programID];
+}
+
+- (BOOL)moveWithinPlayingAODGroup:(NSInteger)direction showBoundary:(BOOL)showBoundary {
+    CommonData *data = GetCommonData;
+    NSString *programID = data.aodData[@"PR_ID"];
+    if (![data.audio_mode isEqualToString:@"AOD"] || ![UIBaseViewController usesAODGroupsForProgramID:programID]) return NO;
+
+    NSArray<NSDictionary *> *items = data.playingAODGroupItems;
+    NSUInteger currentIndex = items ? [items indexOfObjectPassingTest:^BOOL(NSDictionary *item, NSUInteger idx, BOOL *stop) {
+        return [item[@"PR_ID"] isEqual:programID] && [item[@"CT_NO"] isEqual:data.CT_NO];
+    }] : NSNotFound;
+    if (currentIndex == NSNotFound) {
+        if (showBoundary) [self.view makeToast:@"프로그램에서 권이나 시즌을 선택해 주세요."];
+        return YES;
     }
-    NSDictionary *dic_data = ((NSDictionary*)[CommonUtil jsonParserWithData:data])[@"CONTENTS"][@"data"][0];
-    GetCommonData.PR_ID = dic_data[@"PR_ID"];
-    GetCommonData.aodData = dic_data;
-    self.isPlaying = NO;
-    [self.mainDelegate.avAudioPlayer stop];
-    [self.timer invalidate];
+
+    NSInteger targetIndex = (NSInteger)currentIndex + direction;
+    if (targetIndex < 0 || targetIndex >= (NSInteger)items.count) {
+        if (showBoundary) [self.view makeToast:direction > 0 ? @"이 권/시즌의 마지막 회차입니다." : @"이 권/시즌의 첫 회차입니다."];
+        return YES;
+    }
+
+    NSDictionary *targetItem = items[targetIndex];
+    if (![targetItem[@"PR_ID"] isEqual:programID]) return YES;
+    data.PR_ID = programID;
+    data.aodData = targetItem;
     [self playAOD];
+    [self.tb_AODSubList reloadData];
+    return YES;
+}
+
+- (void)moveAODTrackForward:(BOOL)forward {
+    if ([self moveWithinPlayingAODGroup:forward ? 1 : -1 showBoundary:YES]) return;
+    NSString *contentID = GetCommonData.CT_NO;
+    NSString *programID = GetCommonData.aodData[@"PR_ID"];
+    if (!contentID.length || !programID.length || self.loadingTrack) return;
+    self.loadingTrack = YES;
+    NSString *url = [NSString stringWithFormat:[URLAddressManager getURL:[URLAddressManager getLocal] type:forward ? PLAYNEXT : PLAYPREV], programID, contentID];
+    __weak typeof(self) weakSelf = self;
+    [GetURLAddressManager getProgramList:url CompletionHandler:^(id data, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(self) self = weakSelf;
+            if (!self) return;
+            self.loadingTrack = NO;
+            if (![GetCommonData.audio_mode isEqualToString:@"AOD"] || ![GetCommonData.CT_NO isEqual:contentID]) return;
+            NSDictionary *contents = [data isKindOfClass:NSDictionary.class] ? data[@"CONTENTS"] : nil;
+            NSArray *items = [contents isKindOfClass:NSDictionary.class] ? contents[@"data"] : nil;
+            if (error) { [self.view makeToast:NSLocalizedString(@"common_network_error", @"네트워크 연결을 확인해 주세요.")]; return; }
+            if (![items isKindOfClass:NSArray.class] || !items.count) {
+                [self.view makeToast:forward ? NSLocalizedString(@"Player_next_empty", @"다음곡이 없습니다.") : NSLocalizedString(@"Player_prev_empty", @"이전곡이 없습니다.")];
+                return;
+            }
+            NSDictionary *item = items.firstObject;
+            GetCommonData.PR_ID = item[@"PR_ID"];
+            GetCommonData.aodData = item;
+            self.isPlaying = NO;
+            [self.mainDelegate.avAudioPlayer stop];
+            [self.timer invalidate];
+            [self playAOD];
+            [self.tb_AODSubList reloadData];
+        });
+    }];
 }
 
 - (IBAction)play
 {
+    if ([JRBiblePlayback shared].active) { [[JRBiblePlayback shared] togglePlayback]; self.btn_play.selected = self.mainDelegate.avAudioPlayer.state == STKAudioPlayerStatePlaying; return; }
     _btn_play.selected = !_btn_play.selected;
     if (!_btn_play.selected) {
         if ([GetCommonData.audio_mode isEqualToString:@"AOD"]) {
@@ -951,14 +1009,24 @@
 
 - (void)playAOD
 {
-    [self.mainDelegate startAnimatedLodingView];
-    if ([GetCommonData.audio_mode isEqualToString:@"AOD"]&&
-        [GetCommonData.CT_NO isEqualToString:GetCommonData.aodData[@"CT_NO"]]) {
-        [self.mainDelegate stopAnimatedLodingView];
+    STKAudioPlayer *previousPlayer = self.mainDelegate.avAudioPlayer;
+    if ([GetCommonData.audio_mode isEqualToString:@"AOD"] &&
+        [GetCommonData.CT_NO isEqualToString:GetCommonData.aodData[@"CT_NO"]] &&
+        previousPlayer != self.failedAODPlayer &&
+        (previousPlayer.state == STKAudioPlayerStatePlaying ||
+         previousPlayer.state == STKAudioPlayerStatePaused ||
+         previousPlayer == self.startingAODPlayer)) {
         return;
-    } else {
-        self.isPlaying = NO;
-        [self.mainDelegate.avAudioPlayer stop];
+    }
+    [self.mainDelegate startAnimatedLodingView];
+    self.isPlaying = NO;
+    [previousPlayer stop];
+    NSDictionary *item = GetCommonData.aodData;
+    NSArray<NSDictionary *> *groupItems = GetCommonData.playingAODGroupItems;
+    if (groupItems && [groupItems indexOfObjectPassingTest:^BOOL(NSDictionary *episode, NSUInteger idx, BOOL *stop) {
+        return [episode[@"PR_ID"] isEqual:item[@"PR_ID"]] && [episode[@"CT_NO"] isEqual:item[@"CT_NO"]];
+    }] == NSNotFound) {
+        GetCommonData.playingAODGroupItems = nil;
     }
     
 //    if (self.mainDelegate.audioPlayer.playbackState != MPMoviePlaybackStateStopped) {
@@ -972,13 +1040,23 @@
     NSLog(@"%@", GetCommonData.aodData);
     GetCommonData.CT_NO = GetCommonData.aodData[@"CT_NO"];
     NSURL *url_path = [NSURL URLWithString:GetCommonData.aodData[@"CT_SOURCE_STREAM"]];
-    self.mainDelegate.avAudioPlayer =  [[STKAudioPlayer alloc] init];
-    [self.mainDelegate.avAudioPlayer playURL:url_path];
-    self.mainDelegate.avAudioPlayer.delegate = self;
+    STKAudioPlayer *player = [[STKAudioPlayer alloc] init];
+    self.mainDelegate.avAudioPlayer = player;
+    self.startingAODPlayer = player;
+    player.delegate = self;
+    isPlay = NO;
+    [player playURL:url_path];
+    __weak typeof(self) weakSelf = self;
+    __weak STKAudioPlayer *weakPlayer = player;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        STKAudioPlayer *startingPlayer = weakPlayer;
+        if (startingPlayer && startingPlayer == weakSelf.startingAODPlayer) {
+            [weakSelf finishFailedAODPlayback:startingPlayer];
+        }
+    });
 //    self.mainDelegate.audioPlayer.shouldAutoplay = YES;
 //    [self.mainDelegate.audioPlayer play];
     
-    isPlay = NO;
     if (![_timer isValid]) {
         _timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updatePlaybackProgressFromTimer:) userInfo:nil repeats:YES];
     }
@@ -1089,6 +1167,7 @@
     
     [self.sl_progress setHidden:YES];
     GetCommonData.audio_mode = @"LIVE";
+    GetCommonData.playingAODGroupItems = nil;
     self.btn_play.selected = YES;
     
     NSURL *url_path = nil;
@@ -1135,8 +1214,10 @@
 }
 
 - (void) updatePlaybackProgressFromTimer:(NSTimer *)timer {
-    
-    if (!_isPlaying) {
+    // Bible playback owns its lock-screen record, including artwork and chapter title.
+    BOOL bibleActive = [JRBiblePlayback shared].active;
+    if (bibleActive) [[JRBiblePlayback shared] updateNowPlayingInfo];
+    if (!_isPlaying && !bibleActive) {
         if ([self.mainDelegate.avAudioPlayer duration] > 0) {
             _isPlaying = YES;
             Class playingInfoCenter = NSClassFromString(@"MPNowPlayingInfoCenter");
@@ -1145,7 +1226,7 @@
                 if ([GetCommonData.audio_mode isEqualToString:@"AOD"]) {
                     @try {
                         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-                        albumArt = [[MPMediaItemArtwork alloc] initWithImage:GetCommonData.thum];
+                        albumArt = [[MPMediaItemArtwork alloc] initWithBoundsSize:GetCommonData.thum.size requestHandler:^UIImage *(CGSize size) { return GetCommonData.thum; }];
                         [songInfo setObject:GetCommonData.aodData[@"CT_NAME"] forKey:MPMediaItemPropertyArtist];
                         [songInfo setObject:[GetCommonData.aodData[@"CT_HOST"] length] > 0 ? GetCommonData.aodData[@"CT_HOST"] : GetCommonData.aodData[@"CT_SPEAKER"] forKey:MPMediaItemPropertyTitle];
                         [songInfo setObject:GetCommonData.aodData[@"CT_TOPIC"] forKey:MPMediaItemPropertyAlbumTitle];
@@ -1158,7 +1239,7 @@
                         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
                     } @catch (NSException *exception) {
                         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-                        albumArt = [[MPMediaItemArtwork alloc] initWithImage:[UIImage imageNamed:@"default_image"]];
+                        albumArt = [[MPMediaItemArtwork alloc] initWithBoundsSize:[UIImage imageNamed:@"default_image"].size requestHandler:^UIImage *(CGSize size) { return [UIImage imageNamed:@"default_image"]; }];
                         [songInfo setObject:@"NO DATA" forKey:MPMediaItemPropertyArtist];
                         [songInfo setObject:@"NO DATA" forKey:MPMediaItemPropertyTitle];
                         [songInfo setObject:@"NO DATA" forKey:MPMediaItemPropertyAlbumTitle];
@@ -1180,7 +1261,7 @@
         if (playingInfoCenter) {
             @try {
                 NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-                albumArt = [[MPMediaItemArtwork alloc] initWithImage:GetCommonData.thum];
+                albumArt = [[MPMediaItemArtwork alloc] initWithBoundsSize:GetCommonData.thum.size requestHandler:^UIImage *(CGSize size) { return GetCommonData.thum; }];
                 if ([GetCommonData.liveType isEqualToString:@"track"]) {
                     [songInfo setObject:GetCommonData.metadata[@"artist_name"] forKey:MPMediaItemPropertyArtist];
                     [songInfo setObject:GetCommonData.metadata[@"track_title"] forKey:MPMediaItemPropertyTitle];
@@ -1207,7 +1288,7 @@
                 [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
             } @catch (NSException *exception) {
                 NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-                albumArt = [[MPMediaItemArtwork alloc] initWithImage:[UIImage imageNamed:@"default_image"]];
+                albumArt = [[MPMediaItemArtwork alloc] initWithBoundsSize:[UIImage imageNamed:@"default_image"].size requestHandler:^UIImage *(CGSize size) { return [UIImage imageNamed:@"default_image"]; }];
                 [songInfo setObject:@"NO DATA" forKey:MPMediaItemPropertyArtist];
                 [songInfo setObject:@"NO DATA" forKey:MPMediaItemPropertyTitle];
                 [songInfo setObject:@"NO DATA" forKey:MPMediaItemPropertyAlbumTitle];
@@ -1224,11 +1305,12 @@
         (self.mainDelegate.avAudioPlayer.state ==STKAudioPlayerStatePlaying)) {
         if ([GetCommonData.audio_mode isEqualToString:@"AOD"]) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                if (self.sl_progress.tracking) return;
                 float progress = self.mainDelegate.avAudioPlayer.progress/self.mainDelegate.avAudioPlayer.duration;
                 NSLog(@"progress [%@]", @(progress));
                 
-                [self.sl_progress setValue:self.mainDelegate.avAudioPlayer.progress];
                 [self.sl_progress setMaximumValue:self.mainDelegate.avAudioPlayer.duration];
+                [self.sl_progress setValue:self.mainDelegate.avAudioPlayer.progress];
                 //            NSLog(@"interval [%@]  maximumValue [%@]", @(self.sl_progress.value), @(self.sl_progress.maximumValue));
                 
                 self.lbl_playback_time.text = [NSString stringWithFormat:@"%@",[self convertIntToTime:(int)self.mainDelegate.avAudioPlayer.progress]];
@@ -1771,17 +1853,15 @@
 }
 
 -(void)moveViewUp:(UITextView*)textView {
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.3];
+    [UIView animateWithDuration:0.3 animations:^{
     self.commentsInputView.frame = CGRectMake(0, CGRectGetHeight(self.commentsView.frame) - 260 - CGRectGetHeight(self.commentsInputView.frame), CGRectGetWidth(self.commentsInputView.frame), CGRectGetHeight(self.commentsInputView.frame));
-    [UIView commitAnimations];
+    }];
 }
 
 -(void)moveViewDown {
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.3];
+    [UIView animateWithDuration:0.3 animations:^{
     self.commentsInputView.frame = CGRectMake(0, CGRectGetMaxY(self.commentsTableView.frame), CGRectGetWidth(self.commentsInputView.frame), CGRectGetHeight(self.commentsInputView.frame));
-    [UIView commitAnimations];
+    }];
 }
 
 

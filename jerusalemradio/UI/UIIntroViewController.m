@@ -1,56 +1,40 @@
-//
-//  UIIntroViewController.m
-//  jerusalemradio
-//
-//  Created by Ja Young Park on 2017. 6. 2..
-//  Copyright © 2017년 JooYoung Kim. All rights reserved.
-//
-
 #import "UIIntroViewController.h"
 #import "ViewController.h"
-#import "UIAODListViewController.h"
-@interface UIIntroViewController ()
 
+@interface UIIntroViewController ()
+@property (nonatomic) BOOL scheduledMainScreen;
 @end
 
 @implementation UIIntroViewController
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    // 포루투갈어권에선 더이상 생방송을 지원하지 않아 AOD 리스트로 바로 이동 시킨다.
-//    if ([URLAddressManager getLocal] != PT) {
-}
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    ViewController *VC = nil;
-    if (IS_3_5_INCH) {
-        _img_BG.image = [UIImage imageNamed:@"launch_image"];
-        VC = [self.storyboard instantiateViewControllerWithIdentifier:@"LiveRadioView_480"];
-    } else {
-        _img_BG.image = [UIImage imageNamed:@"launch_image_568h@2x.png"];
-        VC = [self.storyboard instantiateViewControllerWithIdentifier:@"LiveRadioView"];
-    }
-    [NSThread sleepForTimeInterval:1];
-    
-    [self.navigationController pushViewController:VC animated:NO];
-//    } else {
-//        UIAODListViewController *VC = [self.storyboard instantiateViewControllerWithIdentifier:@"UIAODListView"];
-//        if (IS_3_5_INCH) {
-//            _img_BG.image = [UIImage imageNamed:@"launch_image"];
-//        } else {
-//            _img_BG.image = [UIImage imageNamed:@"launch_image_568h@2x.png"];
-//        }
-//        [NSThread sleepForTimeInterval:1];
-//
-//        [self.navigationController pushViewController:VC animated:NO];
-//    }
+    self.img_BG.image = [UIImage imageNamed:@"LaunchArtwork"];
+    self.img_BG.contentMode = UIViewContentModeScaleAspectFill;
+    self.img_BG.clipsToBounds = YES;
+    self.img_BG.frame = self.view.bounds;
+    self.img_BG.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    self.img_BG.frame = self.view.bounds;
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (self.scheduledMainScreen) return;
+    self.scheduledMainScreen = YES;
+    // Let the full-screen artwork draw before moving on. Sleeping in
+    // viewWillAppear blocked the first frame and could leave a blank launch.
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        typeof(self) self = weakSelf;
+        if (!self) return;
+        self.scheduledMainScreen = NO;
+        if (self.navigationController.topViewController != self) return;
+        NSString *identifier = IS_3_5_INCH ? @"LiveRadioView_480" : @"LiveRadioView";
+        ViewController *controller = [self.storyboard instantiateViewControllerWithIdentifier:identifier];
+        [self.navigationController pushViewController:controller animated:NO];
+    });
+}
 @end

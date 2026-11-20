@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-#import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORPlatform.h"
+#import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORPlatform.h"
 
 #import <sys/sysctl.h>
 
-#import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORAssert.h"
+#import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORAssert.h"
+#import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORReachability.h"
 #import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORConsoleLogger.h"
-#import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORReachability.h"
 
 #import "GoogleDataTransport/GDTCORLibrary/Private/GDTCORRegistrar_Private.h"
 
@@ -100,7 +100,9 @@ GDTCORNetworkType GDTCORNetworkTypeMessage(void) {
 }
 
 GDTCORNetworkMobileSubtype GDTCORNetworkMobileSubTypeMessage(void) {
-#if TARGET_OS_IOS
+// TODO(Xcode 15): When Xcode 15 is the minimum supported Xcode version,
+// it will be unnecessary to check if `TARGET_OS_VISION` is defined.
+#if TARGET_OS_IOS && (!defined(TARGET_OS_VISION) || !TARGET_OS_VISION)
   static NSDictionary<NSString *, NSNumber *> *CTRadioAccessTechnologyToNetworkSubTypeMessage;
   static CTTelephonyNetworkInfo *networkInfo;
   static dispatch_once_t onceToken;
@@ -127,19 +129,13 @@ GDTCORNetworkMobileSubtype GDTCORNetworkMobileSubTypeMessage(void) {
   if (networkCurrentRadioAccessTechnologyDict.count) {
     networkCurrentRadioAccessTechnology = networkCurrentRadioAccessTechnologyDict.allValues[0];
   }
-#else  // TARGET_OS_MACCATALYST
-  if (@available(iOS 12.0, *)) {
-    NSDictionary<NSString *, NSString *> *networkCurrentRadioAccessTechnologyDict =
-        networkInfo.serviceCurrentRadioAccessTechnology;
-    if (networkCurrentRadioAccessTechnologyDict.count) {
-      // In iOS 12, multiple radio technologies can be captured. We prefer not particular radio
-      // tech to another, so we'll just return the first value in the dictionary.
-      networkCurrentRadioAccessTechnology = networkCurrentRadioAccessTechnologyDict.allValues[0];
-    }
-  } else {
-#if TARGET_OS_IOS && __IPHONE_OS_VERSION_MIN_REQUIRED < 120000
-    networkCurrentRadioAccessTechnology = networkInfo.currentRadioAccessTechnology;
-#endif  // TARGET_OS_IOS && __IPHONE_OS_VERSION_MIN_REQUIRED < 120000
+#else   // TARGET_OS_MACCATALYST
+  NSDictionary<NSString *, NSString *> *networkCurrentRadioAccessTechnologyDict =
+      networkInfo.serviceCurrentRadioAccessTechnology;
+  if (networkCurrentRadioAccessTechnologyDict.count) {
+    // In iOS 12, multiple radio technologies can be captured. We prefer not particular radio
+    // tech to another, so we'll just return the first value in the dictionary.
+    networkCurrentRadioAccessTechnology = networkCurrentRadioAccessTechnologyDict.allValues[0];
   }
 #endif  // TARGET_OS_MACCATALYST
   if (networkCurrentRadioAccessTechnology) {
@@ -149,9 +145,9 @@ GDTCORNetworkMobileSubtype GDTCORNetworkMobileSubTypeMessage(void) {
   } else {
     return GDTCORNetworkMobileSubtypeUNKNOWN;
   }
-#else   // TARGET_OS_IOS
+#else   // TARGET_OS_IOS && (!defined(TARGET_OS_VISION) || !TARGET_OS_VISION)
   return GDTCORNetworkMobileSubtypeUNKNOWN;
-#endif  // TARGET_OS_IOS
+#endif  // TARGET_OS_IOS && (!defined(TARGET_OS_VISION) || !TARGET_OS_VISION)
 }
 
 NSString *_Nonnull GDTCORDeviceModel(void) {
@@ -182,6 +178,8 @@ NSData *_Nullable GDTCOREncodeArchive(id<NSSecureCoding> obj,
                                       NSError *_Nullable *error) {
   BOOL result = NO;
   if (filePath.length > 0) {
+    // TODO(ncooke3): For future cleanup– this API shouldn't touch the file
+    // system unless it successfully encoded the given object.
     result = [[NSFileManager defaultManager]
               createDirectoryAtPath:[filePath stringByDeletingLastPathComponent]
         withIntermediateDirectories:YES
@@ -193,78 +191,44 @@ NSData *_Nullable GDTCOREncodeArchive(id<NSSecureCoding> obj,
     }
   }
   NSData *resultData;
-  if (@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4, *)) {
-    resultData = [NSKeyedArchiver archivedDataWithRootObject:obj
-                                       requiringSecureCoding:YES
-                                                       error:error];
-    if (resultData == nil || (error != NULL && *error != nil)) {
-      GDTCORLogDebug(@"Encoding an object failed: %@", *error);
-      return nil;
-    }
-    if (filePath.length > 0) {
-      result = [resultData writeToFile:filePath options:NSDataWritingAtomic error:error];
-      if (result == NO || *error) {
+  resultData = [NSKeyedArchiver archivedDataWithRootObject:obj
+                                     requiringSecureCoding:YES
+                                                     error:error];
+  if (resultData == nil || (error != NULL && *error != nil)) {
+    GDTCORLogDebug(@"Encoding an object failed: %@", *error);
+    return nil;
+  }
+  if (filePath.length > 0) {
+    result = [resultData writeToFile:filePath options:NSDataWritingAtomic error:error];
+    if (result == NO || (error != NULL && *error != nil)) {
+      if (error != NULL && *error != nil) {
         GDTCORLogDebug(@"Attempt to write archive failed: path:%@ error:%@", filePath, *error);
       } else {
-        GDTCORLogDebug(@"Writing archive succeeded: %@", filePath);
+        GDTCORLogDebug(@"Attempt to write archive failed: path:%@", filePath);
       }
+    } else {
+      GDTCORLogDebug(@"Writing archive succeeded: %@", filePath);
     }
-  } else {
-    @try {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      resultData = [NSKeyedArchiver archivedDataWithRootObject:obj];
-#pragma clang diagnostic pop
-      if (filePath.length > 0) {
-        result = [resultData writeToFile:filePath options:NSDataWritingAtomic error:error];
-        if (result == NO || *error) {
-          GDTCORLogDebug(@"Attempt to write archive failed: URL:%@ error:%@", filePath, *error);
-        } else {
-          GDTCORLogDebug(@"Writing archive succeeded: %@", filePath);
-        }
-      }
-    } @catch (NSException *exception) {
-      NSString *errorString =
-          [NSString stringWithFormat:@"An exception was thrown during encoding: %@", exception];
-      *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                   code:-1
-                               userInfo:@{NSLocalizedFailureReasonErrorKey : errorString}];
-    }
-    GDTCORLogDebug(@"Attempt to write archive. successful:%@ URL:%@ error:%@",
-                   result ? @"YES" : @"NO", filePath, *error);
   }
   return resultData;
 }
 
-id<NSSecureCoding> _Nullable GDTCORDecodeArchive(Class archiveClass,
-                                                 NSString *_Nullable archivePath,
-                                                 NSData *_Nullable archiveData,
-                                                 NSError *_Nullable *error) {
-  id<NSSecureCoding> unarchivedObject = nil;
-  if (@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4, *)) {
-    NSData *data = archiveData ? archiveData : [NSData dataWithContentsOfFile:archivePath];
-    if (data) {
-      unarchivedObject = [NSKeyedUnarchiver unarchivedObjectOfClass:archiveClass
-                                                           fromData:data
-                                                              error:error];
-    }
-  } else {
-    @try {
-      NSData *archivedData =
-          archiveData ? archiveData : [NSData dataWithContentsOfFile:archivePath];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      unarchivedObject = [NSKeyedUnarchiver unarchiveObjectWithData:archivedData];
-#pragma clang diagnostic pop
-    } @catch (NSException *exception) {
-      NSString *errorString =
-          [NSString stringWithFormat:@"An exception was thrown during encoding: %@", exception];
-      *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                   code:-1
-                               userInfo:@{NSLocalizedFailureReasonErrorKey : errorString}];
-    }
+id<NSSecureCoding> _Nullable GDTCORDecodeArchiveAtPath(Class archiveClass,
+                                                       NSString *_Nonnull archivePath,
+                                                       NSError **_Nonnull error) {
+  NSData *data = [NSData dataWithContentsOfFile:archivePath options:0 error:error];
+  if (data == nil) {
+    // Reading the file failed and `error` will be populated.
+    return nil;
   }
-  return unarchivedObject;
+
+  return GDTCORDecodeArchive(archiveClass, data, error);
+}
+
+id<NSSecureCoding> _Nullable GDTCORDecodeArchive(Class archiveClass,
+                                                 NSData *_Nonnull archiveData,
+                                                 NSError **_Nonnull error) {
+  return [NSKeyedUnarchiver unarchivedObjectOfClass:archiveClass fromData:archiveData error:error];
 }
 
 BOOL GDTCORWriteDataToFile(NSData *data, NSString *filePath, NSError *_Nullable *outError) {
